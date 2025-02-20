@@ -91,8 +91,9 @@ export const Notifications = () => {
                 </div>
               )}
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };

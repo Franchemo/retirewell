@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const container = {
   hidden: { opacity: 0 },
@@ -49,6 +50,23 @@ export const ProgressDashboard = () => {
     }
   ];
 
+  const progressData = [
+    { date: 'Week 1', progress: 30 },
+    { date: 'Week 2', progress: 45 },
+    { date: 'Week 3', progress: 65 },
+    { date: 'Week 4', progress: 85 },
+  ];
+
+  const wellnessData = [
+    { day: 'Mon', score: 75 },
+    { day: 'Tue', score: 82 },
+    { day: 'Wed', score: 78 },
+    { day: 'Thu', score: 85 },
+    { day: 'Fri', score: 80 },
+    { day: 'Sat', score: 88 },
+    { day: 'Sun', score: 85 },
+  ];
+
   return (
     <motion.div
       variants={container}
@@ -60,6 +78,59 @@ export const ProgressDashboard = () => {
       <motion.div variants={item} className="text-left">
         <h2 className="text-2xl font-semibold text-gray-900">Welcome Back</h2>
         <p className="text-gray-600 mt-2">Continue your healing journey</p>
+      </motion.div>
+
+      {/* Charts Section */}
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Treatment Progress Chart */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Treatment Progress</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={progressData}>
+                <defs>
+                  <linearGradient id="progressColor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Area 
+                  type="monotone" 
+                  dataKey="progress" 
+                  stroke="#14b8a6" 
+                  fillOpacity={1} 
+                  fill="url(#progressColor)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Weekly Wellness Score */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Weekly Wellness Score</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={wellnessData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis domain={[0, 100]} />
+                <Tooltip />
+                <Line 
+                  type="monotone" 
+                  dataKey="score" 
+                  stroke="#14b8a6" 
+                  strokeWidth={2}
+                  dot={{ fill: '#14b8a6' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </motion.div>
 
       {/* Progress Overview */}

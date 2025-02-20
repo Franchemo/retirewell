@@ -5,6 +5,7 @@ import { BookmarkedContent } from "@/components/BookmarkedContent";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { ContentLibrary } from "@/components/ContentLibrary";
 import { Notifications } from "@/components/Notifications";
+import { WellnessToolkit } from "@/components/WellnessToolkit";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -35,6 +36,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-screen-xl mx-auto">
         {activeTab === "dashboard" && <ProgressDashboard />}
+        {activeTab === "toolkit" && <WellnessToolkit />}
         {activeTab === "library" && <ContentLibrary />}
         {activeTab === "bookmarks" && <BookmarkedContent />}
       </main>
@@ -46,7 +48,7 @@ const Index = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="grid grid-cols-3 h-16">
+        <div className="grid grid-cols-4 h-16">
           <button
             onClick={() => setActiveTab("dashboard")}
             className={`flex flex-col items-center justify-center space-y-1 ${
@@ -69,6 +71,18 @@ const Index = () => {
               />
             </svg>
             <span className="text-xs">Dashboard</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("toolkit")}
+            className={`flex flex-col items-center justify-center space-y-1 ${
+              activeTab === "toolkit"
+                ? "text-teal-600"
+                : "text-gray-600 hover:text-teal-500"
+            }`}
+          >
+            <Heart className="w-6 h-6" />
+            <span className="text-xs">Toolkit</span>
           </button>
 
           <button

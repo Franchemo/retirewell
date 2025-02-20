@@ -37,15 +37,15 @@ export const ProgressDashboard = () => {
   const recommendedContent = [
     {
       id: 1,
-      title: "Understanding Thought Patterns",
-      category: "CBT Basics",
-      duration: "10 min read"
+      title: "Understand Your Treatment",
+      category: "Treatment Guide",
+      duration: "12 min read"
     },
     {
       id: 2,
-      title: "Daily Mindfulness Exercises",
-      category: "Practical Tips",
-      duration: "15 min read"
+      title: "Managing Side Effects",
+      category: "Health Management",
+      duration: "8 min read"
     }
   ];
 

@@ -157,9 +157,11 @@ export const ProgressDashboard = () => {
         <h3 className="text-lg font-medium text-gray-900">Recent Sessions</h3>
         <div className="space-y-4">
           {recentSessions.map((session) => (
-            <div
+            <motion.div
               key={session.id}
-              className="bg-white rounded-lg p-4 shadow-sm border border-gray-100"
+              className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="flex justify-between items-center">
                 <div>
@@ -176,12 +178,14 @@ export const ProgressDashboard = () => {
                 </div>
               </div>
               <div className="mt-2 bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-teal-500 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${session.progress}%` }}
+                <motion.div
+                  className="bg-teal-500 h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${session.progress}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
                 />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.section>
@@ -191,9 +195,11 @@ export const ProgressDashboard = () => {
         <h3 className="text-lg font-medium text-gray-900">Recommended for You</h3>
         <div className="grid grid-cols-1 gap-4">
           {recommendedContent.map((content) => (
-            <div
+            <motion.div
               key={content.id}
-              className="bg-white rounded-lg p-4 shadow-sm border border-gray-100"
+              className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -202,7 +208,7 @@ export const ProgressDashboard = () => {
                 </div>
                 <span className="text-sm text-gray-500">{content.duration}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.section>

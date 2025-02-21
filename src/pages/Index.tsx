@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Heart } from "lucide-react"; // Add this import
 import { BookmarkedContent } from "@/components/BookmarkedContent";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { ContentLibrary } from "@/components/ContentLibrary";

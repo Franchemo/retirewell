@@ -1,14 +1,13 @@
 
-import { useState } from "react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { Book, Heart } from "lucide-react";
 
 const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
+    transition: { staggerChildren: 0.1 }
   }
 };
 
@@ -17,99 +16,187 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
+type ContentCategory = "All" | "Exercises" | "Articles" | "Videos" | "Audio";
+type ContentItem = {
+  id: string;
+  title: string;
+  description: string;
+  type: "exercise" | "article" | "video" | "audio";
+  duration: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  progress?: number;
+  isBookmarked: boolean;
+};
+
 export const ContentLibrary = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeCategory, setActiveCategory] = useState<ContentCategory>("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const categories = [
-    { id: "all", name: "All" },
-    { id: "coping", name: "Coping Strategies" },
-    { id: "education", name: "Mental Health" },
-    { id: "exercises", name: "Exercises" }
-  ];
+  const categories: ContentCategory[] = ["All", "Exercises", "Articles", "Videos", "Audio"];
 
-  const content = [
+  const contentItems: ContentItem[] = [
     {
-      id: 1,
+      id: "1",
       title: "Understanding Anxiety",
-      category: "education",
+      description: "Learn about the root causes of anxiety and effective coping mechanisms.",
+      type: "article",
       duration: "10 min read",
-      description: "Learn about the basics of anxiety and its effects on your body and mind."
+      difficulty: "Beginner",
+      progress: 75,
+      isBookmarked: false
     },
     {
-      id: 2,
-      title: "Deep Breathing Techniques",
-      category: "exercises",
-      duration: "5 min read",
-      description: "Simple breathing exercises to help manage stress and anxiety."
+      id: "2",
+      title: "Guided Meditation",
+      description: "A calming meditation session for stress relief.",
+      type: "audio",
+      duration: "15 min",
+      difficulty: "Beginner",
+      progress: 0,
+      isBookmarked: true
     },
     {
-      id: 3,
-      title: "Challenging Negative Thoughts",
-      category: "coping",
-      duration: "15 min read",
-      description: "Practical strategies for identifying and reframing negative thought patterns."
+      id: "3",
+      title: "Cognitive Behavioral Exercises",
+      description: "Interactive exercises to challenge negative thought patterns.",
+      type: "exercise",
+      duration: "20 min",
+      difficulty: "Intermediate",
+      progress: 30,
+      isBookmarked: false
+    },
+    {
+      id: "4",
+      title: "Stress Management Techniques",
+      description: "Video demonstration of effective stress management techniques.",
+      type: "video",
+      duration: "12 min",
+      difficulty: "Beginner",
+      progress: 0,
+      isBookmarked: false
     }
   ];
 
-  const filteredContent = activeFilter === "all" 
-    ? content 
-    : content.filter(item => item.category === activeFilter);
+  const filteredContent = contentItems.filter(item => {
+    const matchesCategory = activeCategory === "All" || item.type === activeCategory.toLowerCase();
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const toggleBookmark = (id: string) => {
+    // In a real app, this would update the backend
+    console.log(`Toggled bookmark for item ${id}`);
+  };
 
   return (
     <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="space-y-8"
     >
-      {/* Header */}
-      <motion.div variants={item} className="text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">Content Library</h2>
-        <p className="text-gray-600 mt-2">Explore educational resources and exercises</p>
+      {/* Search Bar */}
+      <motion.div variants={item} className="relative">
+        <input
+          type="text"
+          placeholder="Search content..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+        />
       </motion.div>
 
-      {/* Category Filters */}
-      <motion.div variants={item} className="flex overflow-x-auto py-2 -mx-4 px-4 space-x-2 scrollbar-none">
+      {/* Categories */}
+      <motion.div variants={item} className="flex overflow-x-auto space-x-4 pb-2">
         {categories.map((category) => (
           <button
-            key={category.id}
-            onClick={() => setActiveFilter(category.id)}
-            className={`flex-none px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-              activeFilter === category.id
-                ? "bg-teal-100 text-teal-800"
+            key={category}
+            onClick={() => setActiveCategory(category)}
+            className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+              activeCategory === category
+                ? "bg-teal-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
-            {category.name}
+            {category}
           </button>
         ))}
       </motion.div>
 
       {/* Content Grid */}
-      <motion.div variants={item} className="grid gap-4">
-        {filteredContent.map((item) => (
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {filteredContent.map((content) => (
           <motion.div
-            key={item.id}
-            className="bg-white rounded-lg p-4 shadow-sm border border-gray-100"
+            key={content.id}
+            className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all"
             whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
+            variants={item}
           >
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-medium text-gray-900">{item.title}</h3>
-              <span className="text-sm text-gray-500">{item.duration}</span>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">{item.description}</p>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-teal-600 bg-teal-50 px-2 py-1 rounded-full">
-                {categories.find(cat => cat.id === item.category)?.name}
-              </span>
-              <button className="text-sm text-teal-600 hover:text-teal-700 font-medium">
-                Read More →
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <h3 className="text-lg font-medium text-gray-900">{content.title}</h3>
+                <p className="text-gray-600 mt-1">{content.description}</p>
+                
+                <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
+                  <span className="flex items-center">
+                    <Book className="w-4 h-4 mr-1" />
+                    {content.duration}
+                  </span>
+                  <span className="px-2 py-1 rounded-full bg-gray-100 text-xs">
+                    {content.difficulty}
+                  </span>
+                </div>
+
+                {content.progress !== undefined && content.progress > 0 && (
+                  <div className="mt-4">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">Progress</span>
+                      <span className="text-teal-600">{content.progress}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full">
+                      <motion.div
+                        className="h-full bg-teal-500 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${content.progress}%` }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => toggleBookmark(content.id)}
+                className={`ml-4 p-2 rounded-full transition-colors ${
+                  content.isBookmarked
+                    ? "text-red-500 bg-red-50 hover:bg-red-100"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                <Heart className="w-5 h-5" />
               </button>
             </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="mt-4 w-full py-2 px-4 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+            >
+              {content.progress ? "Continue" : "Start"} {content.type}
+            </motion.button>
           </motion.div>
         ))}
       </motion.div>
+
+      {filteredContent.length === 0 && (
+        <motion.div
+          variants={item}
+          className="text-center py-12 text-gray-500"
+        >
+          No content found matching your criteria
+        </motion.div>
+      )}
     </motion.div>
   );
 };

@@ -1,6 +1,8 @@
 
 import { motion } from "framer-motion";
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
+import { Brain, Calendar, TrendingUp, Target, ArrowRight } from 'lucide-react';
+import { useState } from "react";
 
 const container = {
   hidden: { opacity: 0 },
@@ -17,38 +19,26 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
-export const ProgressDashboard = () => {
-  const recentSessions = [
-    {
-      id: 1,
-      date: "March 15, 2024",
-      topic: "Anxiety Management",
-      duration: "45 min",
-      progress: 85
-    },
-    {
-      id: 2,
-      date: "March 12, 2024",
-      topic: "Stress Reduction",
-      duration: "30 min",
-      progress: 70
-    }
-  ];
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
+        <p className="text-sm font-medium text-gray-900">{label}</p>
+        <p className="text-sm text-teal-600">
+          Score: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
-  const recommendedContent = [
-    {
-      id: 1,
-      title: "Understand Your Treatment",
-      category: "Treatment Guide",
-      duration: "12 min read"
-    },
-    {
-      id: 2,
-      title: "Managing Side Effects",
-      category: "Health Management",
-      duration: "8 min read"
-    }
-  ];
+export const ProgressDashboard = () => {
+  const [timeframe, setTimeframe] = useState<"daily" | "weekly">("daily");
 
   const progressData = [
     { date: 'Week 1', progress: 30 },
@@ -57,14 +47,37 @@ export const ProgressDashboard = () => {
     { date: 'Week 4', progress: 85 },
   ];
 
-  const wellnessData = [
-    { day: 'Mon', score: 75 },
-    { day: 'Tue', score: 82 },
-    { day: 'Wed', score: 78 },
-    { day: 'Thu', score: 85 },
-    { day: 'Fri', score: 80 },
-    { day: 'Sat', score: 88 },
-    { day: 'Sun', score: 85 },
+  const wellnessData = {
+    daily: [
+      { day: 'Mon', score: 75 },
+      { day: 'Tue', score: 82 },
+      { day: 'Wed', score: 78 },
+      { day: 'Thu', score: 85 },
+      { day: 'Fri', score: 80 },
+      { day: 'Sat', score: 88 },
+      { day: 'Sun', score: 85 },
+    ],
+    weekly: [
+      { day: 'Week 1', score: 72 },
+      { day: 'Week 2', score: 78 },
+      { day: 'Week 3', score: 82 },
+      { day: 'Week 4', score: 85 },
+    ]
+  };
+
+  const suggestedContent = [
+    {
+      title: "Morning Mindfulness",
+      type: "meditation",
+      duration: "10 min",
+      icon: Brain,
+    },
+    {
+      title: "Stress Relief Exercise",
+      type: "exercise",
+      duration: "15 min",
+      icon: Target,
+    }
   ];
 
   return (
@@ -74,10 +87,43 @@ export const ProgressDashboard = () => {
       animate="show"
       className="space-y-8"
     >
-      {/* Welcome Section */}
-      <motion.div variants={item} className="text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">Welcome Back</h2>
-        <p className="text-gray-600 mt-2">Continue your healing journey</p>
+      {/* Welcome Section with Today's Focus */}
+      <motion.div variants={item} className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white">
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-2xl font-semibold">Welcome Back</h2>
+            <p className="mt-2 opacity-90">Your journey continues with strength and resilience</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2 bg-white/20 rounded-full backdrop-blur-sm"
+          >
+            <Calendar className="w-5 h-5" />
+          </motion.button>
+        </div>
+        
+        <div className="mt-6">
+          <h3 className="text-lg font-medium mb-3">Today's Focus</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {suggestedContent.map((content, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.02 }}
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-4 cursor-pointer"
+              >
+                <div className="flex items-center">
+                  <content.icon className="w-5 h-5 mr-3" />
+                  <div>
+                    <h4 className="font-medium">{content.title}</h4>
+                    <p className="text-sm opacity-90">{content.duration}</p>
+                  </div>
+                  <ArrowRight className="w-4 h-4 ml-auto" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </motion.div>
 
       {/* Charts Section */}
@@ -97,7 +143,7 @@ export const ProgressDashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <Area 
                   type="monotone" 
                   dataKey="progress" 
@@ -110,16 +156,40 @@ export const ProgressDashboard = () => {
           </div>
         </div>
 
-        {/* Weekly Wellness Score */}
+        {/* Wellness Score Chart */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Weekly Wellness Score</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900">Wellness Score</h3>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setTimeframe("daily")}
+                className={`px-3 py-1 rounded-full text-sm ${
+                  timeframe === "daily"
+                    ? "bg-teal-500 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                Daily
+              </button>
+              <button
+                onClick={() => setTimeframe("weekly")}
+                className={`px-3 py-1 rounded-full text-sm ${
+                  timeframe === "weekly"
+                    ? "bg-teal-500 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                Weekly
+              </button>
+            </div>
+          </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={wellnessData}>
+              <LineChart data={wellnessData[timeframe]}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="day" />
                 <YAxis domain={[0, 100]} />
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="score" 
@@ -133,85 +203,53 @@ export const ProgressDashboard = () => {
         </div>
       </motion.div>
 
-      {/* Progress Overview */}
-      <motion.div variants={item} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Weekly Progress</h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-teal-600">3</div>
-            <div className="text-sm text-gray-600">Sessions</div>
+      {/* Key Metrics */}
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-teal-100 rounded-lg">
+              <TrendingUp className="w-6 h-6 text-teal-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Weekly Progress</p>
+              <h4 className="text-xl font-semibold text-gray-900">85%</h4>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-teal-600">85%</div>
-            <div className="text-sm text-gray-600">Completion</div>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-teal-100 rounded-lg">
+              <Calendar className="w-6 h-6 text-teal-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Streak</p>
+              <h4 className="text-xl font-semibold text-gray-900">7 days</h4>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-teal-600">45m</div>
-            <div className="text-sm text-gray-600">Avg. Time</div>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-teal-100 rounded-lg">
+              <Target className="w-6 h-6 text-teal-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Goals Met</p>
+              <h4 className="text-xl font-semibold text-gray-900">12/15</h4>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
-
-      {/* Recent Sessions */}
-      <motion.section variants={item} className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Recent Sessions</h3>
-        <div className="space-y-4">
-          {recentSessions.map((session) => (
-            <motion.div
-              key={session.id}
-              className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-medium text-gray-900">{session.topic}</h4>
-                  <p className="text-sm text-gray-600">{session.date}</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-teal-600">
-                    {session.duration}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {session.progress}% Complete
-                  </div>
-                </div>
-              </div>
-              <div className="mt-2 bg-gray-200 rounded-full h-2">
-                <motion.div
-                  className="bg-teal-500 h-2 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${session.progress}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Recommended Content */}
-      <motion.section variants={item} className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Recommended for You</h3>
-        <div className="grid grid-cols-1 gap-4">
-          {recommendedContent.map((content) => (
-            <motion.div
-              key={content.id}
-              className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-              whileHover={{ scale: 1.01 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium text-gray-900">{content.title}</h4>
-                  <p className="text-sm text-gray-600">{content.category}</p>
-                </div>
-                <span className="text-sm text-gray-500">{content.duration}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
     </motion.div>
   );
 };

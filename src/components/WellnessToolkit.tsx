@@ -1,7 +1,8 @@
-
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Circle, Timer, Heart, Brain, Shield, Book } from "lucide-react";
+import { PersonalizationSettings } from "./PersonalizationSettings";
+import { MilestoneCelebration } from "./MilestoneCelebration";
 
 const container = {
   hidden: { opacity: 0 },
@@ -81,7 +82,6 @@ export const WellnessToolkit = () => {
       animate="show"
       className="space-y-8"
     >
-      {/* Breathing Exercise */}
       {isBreathing && (
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -118,8 +118,7 @@ export const WellnessToolkit = () => {
         </motion.div>
       )}
 
-      {/* Mood Tracking */}
-      <motion.section variants={item} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <motion.section variants={item}>
         <h3 className="text-lg font-medium text-gray-900 mb-4">How are you feeling?</h3>
         <div className="flex flex-wrap gap-4">
           {moodOptions.map((option) => (
@@ -139,8 +138,7 @@ export const WellnessToolkit = () => {
         </div>
       </motion.section>
 
-      {/* Quick Tools */}
-      <motion.section variants={item} className="space-y-4">
+      <motion.section variants={item}>
         <h3 className="text-lg font-medium text-gray-900">Quick Tools</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {quickTools.map((tool) => (
@@ -161,8 +159,15 @@ export const WellnessToolkit = () => {
         </div>
       </motion.section>
 
-      {/* Journal Prompts */}
-      <motion.section variants={item} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <motion.section variants={item}>
+        <PersonalizationSettings />
+      </motion.section>
+
+      <motion.section variants={item}>
+        <MilestoneCelebration />
+      </motion.section>
+
+      <motion.section variants={item}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-gray-900">Daily Reflection</h3>
           <Book className="w-5 h-5 text-teal-600" />

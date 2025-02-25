@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 168 75% 40%;
+    --primary: 160 85% 40%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -31,9 +31,39 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 168 75% 40%;
+    --ring: 160 85% 40%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 160 85% 40%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 160 85% 40%;
   }
 }
 
@@ -45,6 +75,72 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+  
+  p {
+    @apply leading-relaxed text-foreground/90;
+  }
+}
+
+@layer components {
+  .card-gradient {
+    @apply bg-gradient-to-br from-card to-secondary/80 backdrop-blur-sm;
+  }
+  
+  .health-card {
+    @apply rounded-lg p-4 border border-border bg-card shadow-card transition-all duration-400 hover:shadow-card-hover;
+  }
+  
+  .health-metric {
+    @apply text-metric font-semibold tracking-tight;
+  }
+  
+  .health-metric-sm {
+    @apply text-metric-sm font-semibold tracking-tight;
+  }
+  
+  .optimal-indicator {
+    @apply text-optimal bg-optimal/10 border-optimal/20;
+  }
+  
+  .attention-indicator {
+    @apply text-attention bg-attention/10 border-attention/20;
+  }
+  
+  .warning-indicator {
+    @apply text-warning bg-warning/10 border-warning/20;
+  }
+  
+  .caution-indicator {
+    @apply text-caution bg-caution/10 border-caution/20;
+  }
+  
+  .critical-indicator {
+    @apply text-critical bg-critical/10 border-critical/20;
+  }
+  
+  .metric-badge {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
 }
 
 @layer utilities {
@@ -54,5 +150,15 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .golden-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+    gap: 1.618rem;
   }
 }

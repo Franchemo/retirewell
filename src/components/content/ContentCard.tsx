@@ -21,14 +21,14 @@ interface ContentCardProps {
 export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
   return (
     <motion.div
-      className="health-card"
+      className="content-card"
       whileHover={{ scale: 1.02 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <h3 className="text-lg font-medium text-foreground">{content.title}</h3>
+          <h3 className="text-lg font-medium text-gradient">{content.title}</h3>
           <p className="text-muted-foreground mt-1 text-sm">{content.description}</p>
           
           <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
@@ -36,20 +36,20 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
               <Book className="w-4 h-4 mr-1" />
               {content.duration}
             </span>
-            <span className="px-2 py-1 rounded-full bg-secondary text-xs">
+            <span className="px-3 py-1 rounded-full frosted-glass text-xs font-medium">
               {content.difficulty}
             </span>
           </div>
 
           {content.progress !== undefined && content.progress > 0 && (
             <div className="mt-4">
-              <div className="flex justify-between text-sm mb-1">
+              <div className="flex justify-between text-sm mb-2">
                 <span className="text-muted-foreground">Progress</span>
-                <span className="text-primary">{content.progress}%</span>
+                <span className="text-primary font-medium">{content.progress}%</span>
               </div>
-              <div className="h-2 bg-secondary rounded-full">
+              <div className="h-2 bg-secondary/50 rounded-full overflow-hidden backdrop-blur-sm">
                 <motion.div
-                  className="h-full bg-primary rounded-full"
+                  className="h-full bg-gradient-to-r from-primary to-primary/80"
                   initial={{ width: 0 }}
                   animate={{ width: `${content.progress}%` }}
                   transition={{ duration: 0.5 }}
@@ -61,10 +61,10 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
 
         <button
           onClick={() => onBookmark(content.id)}
-          className={`ml-4 p-2 rounded-full transition-colors ${
+          className={`ml-4 p-2 rounded-full transition-all duration-300 ${
             content.isBookmarked
-              ? "text-red-500 bg-red-50 hover:bg-red-100"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              ? "bg-red-50 text-red-500 hover:bg-red-100 hover:shadow-lg"
+              : "frosted-glass text-muted-foreground hover:text-foreground hover:shadow-lg"
           }`}
         >
           <Heart className="w-5 h-5" />
@@ -74,7 +74,7 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="mt-4 w-full py-2 px-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        className="button-primary mt-4 w-full"
       >
         {content.progress ? "Continue" : "Start"} {content.type}
       </motion.button>

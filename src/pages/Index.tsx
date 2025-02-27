@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Heart } from "lucide-react"; // Add this import
+import { Heart } from "lucide-react"; 
 import { BookmarkedContent } from "@/components/BookmarkedContent";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { ContentLibrary } from "@/components/ContentLibrary";
@@ -12,10 +12,10 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       {/* Top Navigation */}
       <motion.nav 
-        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100"
+        className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -23,7 +23,7 @@ const Index = () => {
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-semibold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 AugMend Health
               </h1>
             </div>
@@ -44,7 +44,7 @@ const Index = () => {
 
       {/* Bottom Navigation */}
       <motion.div 
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100"
+        className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-sm border-t border-border"
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -54,8 +54,8 @@ const Index = () => {
             onClick={() => setActiveTab("dashboard")}
             className={`flex flex-col items-center justify-center space-y-1 ${
               activeTab === "dashboard"
-                ? "text-teal-600"
-                : "text-gray-600 hover:text-teal-500"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-primary"
             }`}
           >
             <svg
@@ -78,8 +78,8 @@ const Index = () => {
             onClick={() => setActiveTab("toolkit")}
             className={`flex flex-col items-center justify-center space-y-1 ${
               activeTab === "toolkit"
-                ? "text-teal-600"
-                : "text-gray-600 hover:text-teal-500"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-primary"
             }`}
           >
             <Heart className="w-6 h-6" />
@@ -90,8 +90,8 @@ const Index = () => {
             onClick={() => setActiveTab("library")}
             className={`flex flex-col items-center justify-center space-y-1 ${
               activeTab === "library"
-                ? "text-teal-600"
-                : "text-gray-600 hover:text-teal-500"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-primary"
             }`}
           >
             <svg
@@ -114,8 +114,8 @@ const Index = () => {
             onClick={() => setActiveTab("bookmarks")}
             className={`flex flex-col items-center justify-center space-y-1 ${
               activeTab === "bookmarks"
-                ? "text-teal-600"
-                : "text-gray-600 hover:text-teal-500"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-primary"
             }`}
           >
             <svg

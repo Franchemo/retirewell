@@ -1,10 +1,10 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Circle, Timer, Heart, Brain, Shield, Book, Settings } from "lucide-react";
-import { PersonalizationSettings } from "./PersonalizationSettings";
+import { Circle, Heart, Brain, Shield, Book, MessageCircle } from "lucide-react";
 import { MilestoneCelebration } from "./MilestoneCelebration";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useToast } from "@/hooks/use-toast";
 
 const container = {
   hidden: { opacity: 0 },
@@ -25,7 +25,7 @@ export const WellnessToolkit = () => {
   const [breathCount, setBreathCount] = useState(0);
   const [isBreathing, setIsBreathing] = useState(false);
   const [mood, setMood] = useState<string | null>(null);
-  const { toggleSettingsPanel } = useTheme();
+  const { toast } = useToast();
 
   const moodOptions = [
     { emoji: "😊", label: "Happy" },
@@ -46,25 +46,42 @@ export const WellnessToolkit = () => {
       icon: Heart,
       title: "Self-Compassion",
       description: "Practice kind self-talk",
-      action: () => console.log("Self-compassion tool clicked")
+      action: () => {
+        toast({
+          title: "Self-Compassion Exercise",
+          description: "Take a moment to practice self-kindness"
+        });
+      }
     },
     {
       icon: Brain,
       title: "Thought Check",
       description: "Challenge negative thoughts",
-      action: () => console.log("Thought check tool clicked")
+      action: () => {
+        toast({
+          title: "Thought Check",
+          description: "Identify and reframe negative thinking patterns"
+        });
+      }
     },
     {
       icon: Shield,
       title: "Grounding",
       description: "Connect with your senses",
-      action: () => console.log("Grounding tool clicked")
+      action: () => {
+        toast({
+          title: "Grounding Exercise",
+          description: "Notice 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste"
+        });
+      }
     },
     {
-      icon: Settings,
-      title: "Personalize Dashboard",
-      description: "Customize your experience",
-      action: () => toggleSettingsPanel()
+      icon: MessageCircle,
+      title: "Health Assistant",
+      description: "Get personalized guidance",
+      action: () => {
+        window.location.href = "/health-assistant";
+      }
     }
   ];
 
@@ -169,25 +186,7 @@ export const WellnessToolkit = () => {
       </motion.section>
 
       <motion.section variants={item}>
-        <PersonalizationSettings />
-      </motion.section>
-
-      <motion.section variants={item}>
         <MilestoneCelebration />
-      </motion.section>
-
-      <motion.section variants={item}>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-foreground">Daily Reflection</h3>
-          <Book className="w-5 h-5 text-primary" />
-        </div>
-        <p className="text-muted-foreground mb-4">
-          What's one small thing you're grateful for today?
-        </p>
-        <textarea
-          className="input-minimal w-full h-32"
-          placeholder="Write your thoughts here..."
-        />
       </motion.section>
     </motion.div>
   );

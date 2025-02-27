@@ -1,7 +1,8 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Heart, Settings } from "lucide-react"; 
+import { Heart, Settings, BookOpen, Award, MessageCircle } from "lucide-react"; 
+import { Link } from "react-router-dom";
 import { BookmarkedContent } from "@/components/BookmarkedContent";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { ContentLibrary } from "@/components/ContentLibrary";
@@ -13,6 +14,30 @@ import { useTheme } from "@/contexts/ThemeContext";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
+
+  const featureCards = [
+    {
+      title: "Daily Reflection",
+      description: "Record your thoughts and track your emotional wellbeing",
+      icon: BookOpen,
+      path: "/reflection-journal",
+      color: "bg-primary/10 text-primary"
+    },
+    {
+      title: "Achievements",
+      description: "Track your health milestones and celebrate progress",
+      icon: Award,
+      path: "/", // Currently just shows the milestone component
+      color: "bg-attention/10 text-attention"
+    },
+    {
+      title: "Health Assistant",
+      description: "Get personalized guidance and answers to health questions",
+      icon: MessageCircle,
+      path: "/health-assistant",
+      color: "bg-optimal/10 text-optimal"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/20">
@@ -71,7 +96,31 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {activeTab === "dashboard" && <ProgressDashboard />}
+              {activeTab === "dashboard" && (
+                <>
+                  <ProgressDashboard />
+                  <div className="mt-8">
+                    <h2 className="text-2xl font-medium text-gradient mb-4">Featured Tools</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {featureCards.map((card) => (
+                        <Link key={card.title} to={card.path}>
+                          <motion.div
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="content-card h-full"
+                          >
+                            <div className={`p-3 rounded-full w-12 h-12 mb-4 flex items-center justify-center ${card.color}`}>
+                              <card.icon className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-lg font-medium mb-2">{card.title}</h3>
+                            <p className="text-muted-foreground text-sm">{card.description}</p>
+                          </motion.div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
               {activeTab === "toolkit" && <WellnessToolkit />}
               {activeTab === "library" && <ContentLibrary />}
               {activeTab === "bookmarks" && <BookmarkedContent />}

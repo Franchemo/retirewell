@@ -1,9 +1,10 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Circle, Timer, Heart, Brain, Shield, Book } from "lucide-react";
+import { Circle, Timer, Heart, Brain, Shield, Book, Settings } from "lucide-react";
 import { PersonalizationSettings } from "./PersonalizationSettings";
 import { MilestoneCelebration } from "./MilestoneCelebration";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const container = {
   hidden: { opacity: 0 },
@@ -24,6 +25,7 @@ export const WellnessToolkit = () => {
   const [breathCount, setBreathCount] = useState(0);
   const [isBreathing, setIsBreathing] = useState(false);
   const [mood, setMood] = useState<string | null>(null);
+  const { toggleSettingsPanel } = useTheme();
 
   const moodOptions = [
     { emoji: "😊", label: "Happy" },
@@ -57,6 +59,12 @@ export const WellnessToolkit = () => {
       title: "Grounding",
       description: "Connect with your senses",
       action: () => console.log("Grounding tool clicked")
+    },
+    {
+      icon: Settings,
+      title: "Personalize Dashboard",
+      description: "Customize your experience",
+      action: () => toggleSettingsPanel()
     }
   ];
 
@@ -100,18 +108,18 @@ export const WellnessToolkit = () => {
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="w-32 h-32 bg-teal-100 rounded-full mx-auto flex items-center justify-center"
+              className="w-32 h-32 bg-primary/20 rounded-full mx-auto flex items-center justify-center"
             >
-              <span className="text-teal-600 text-lg">
+              <span className="text-primary text-lg">
                 {breathCount % 2 === 0 ? "Inhale" : "Exhale"}
               </span>
             </motion.div>
-            <p className="text-center mt-4 text-gray-600">
+            <p className="text-center mt-4 text-muted-foreground">
               Breath {Math.floor(breathCount / 2) + 1} of 5
             </p>
             <button
               onClick={() => setIsBreathing(false)}
-              className="mt-6 w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 transition-colors"
+              className="mt-6 w-full py-2 px-4 bg-secondary hover:bg-secondary/80 rounded-lg text-foreground transition-colors"
             >
               End Exercise
             </button>
@@ -120,7 +128,7 @@ export const WellnessToolkit = () => {
       )}
 
       <motion.section variants={item}>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">How are you feeling?</h3>
+        <h3 className="text-lg font-medium text-foreground mb-4">How are you feeling?</h3>
         <div className="flex flex-wrap gap-4">
           {moodOptions.map((option) => (
             <button
@@ -128,32 +136,32 @@ export const WellnessToolkit = () => {
               onClick={() => setMood(option.label)}
               className={`flex flex-col items-center p-4 rounded-lg transition-all ${
                 mood === option.label
-                  ? "bg-teal-50 border-2 border-teal-500"
-                  : "bg-gray-50 border-2 border-transparent hover:bg-gray-100"
+                  ? "bg-primary/10 border-2 border-primary"
+                  : "bg-secondary/50 border-2 border-transparent hover:bg-secondary"
               }`}
             >
               <span className="text-2xl mb-1">{option.emoji}</span>
-              <span className="text-sm text-gray-600">{option.label}</span>
+              <span className="text-sm text-foreground/80">{option.label}</span>
             </button>
           ))}
         </div>
       </motion.section>
 
       <motion.section variants={item}>
-        <h3 className="text-lg font-medium text-gray-900">Quick Tools</h3>
+        <h3 className="text-lg font-medium text-foreground">Quick Tools</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {quickTools.map((tool) => (
             <motion.button
               key={tool.title}
               onClick={tool.action}
-              className="flex items-start p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
+              className="flex items-start p-4 content-card hover:shadow-md transition-all"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <tool.icon className="w-6 h-6 text-teal-600 mr-3 flex-shrink-0" />
+              <tool.icon className="w-6 h-6 text-primary mr-3 flex-shrink-0" />
               <div className="text-left">
-                <h4 className="font-medium text-gray-900">{tool.title}</h4>
-                <p className="text-sm text-gray-600 mt-1">{tool.description}</p>
+                <h4 className="font-medium text-foreground">{tool.title}</h4>
+                <p className="text-sm text-muted-foreground mt-1">{tool.description}</p>
               </div>
             </motion.button>
           ))}
@@ -170,14 +178,14 @@ export const WellnessToolkit = () => {
 
       <motion.section variants={item}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900">Daily Reflection</h3>
-          <Book className="w-5 h-5 text-teal-600" />
+          <h3 className="text-lg font-medium text-foreground">Daily Reflection</h3>
+          <Book className="w-5 h-5 text-primary" />
         </div>
-        <p className="text-gray-600 mb-4">
+        <p className="text-muted-foreground mb-4">
           What's one small thing you're grateful for today?
         </p>
         <textarea
-          className="w-full h-32 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          className="input-minimal w-full h-32"
           placeholder="Write your thoughts here..."
         />
       </motion.section>

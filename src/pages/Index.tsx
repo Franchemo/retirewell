@@ -1,15 +1,18 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Heart } from "lucide-react"; 
+import { Heart, Settings } from "lucide-react"; 
 import { BookmarkedContent } from "@/components/BookmarkedContent";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { ContentLibrary } from "@/components/ContentLibrary";
 import { Notifications } from "@/components/Notifications";
 import { WellnessToolkit } from "@/components/WellnessToolkit";
+import { PersonalizationSettings } from "@/components/PersonalizationSettings";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/20">
@@ -28,6 +31,13 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              <button 
+                onClick={toggleSettingsPanel}
+                className="p-2 rounded-full frosted-glass"
+                aria-label="Personalize Dashboard"
+              >
+                <Settings className="w-5 h-5 text-foreground/70" />
+              </button>
               <Notifications />
             </div>
           </div>
@@ -37,16 +47,36 @@ const Index = () => {
       {/* Main Content */}
       <main className="pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-screen-xl mx-auto">
         <div className="relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {activeTab === "dashboard" && <ProgressDashboard />}
-            {activeTab === "toolkit" && <WellnessToolkit />}
-            {activeTab === "library" && <ContentLibrary />}
-            {activeTab === "bookmarks" && <BookmarkedContent />}
-          </motion.div>
+          {isSettingsPanelOpen ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="mb-6 flex justify-between items-center">
+                <h2 className="text-2xl font-medium text-gradient">Personalization Settings</h2>
+                <button 
+                  onClick={toggleSettingsPanel}
+                  className="px-4 py-2 rounded-lg frosted-glass"
+                >
+                  Back to Dashboard
+                </button>
+              </div>
+              <PersonalizationSettings />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {activeTab === "dashboard" && <ProgressDashboard />}
+              {activeTab === "toolkit" && <WellnessToolkit />}
+              {activeTab === "library" && <ContentLibrary />}
+              {activeTab === "bookmarks" && <BookmarkedContent />}
+            </motion.div>
+          )}
         </div>
       </main>
 
@@ -59,9 +89,9 @@ const Index = () => {
       >
         <div className="grid grid-cols-4 gap-1 p-2 max-w-screen-xl mx-auto">
           <button
-            onClick={() => setActiveTab("dashboard")}
+            onClick={() => { setActiveTab("dashboard"); if (isSettingsPanelOpen) toggleSettingsPanel(); }}
             className={`flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 ${
-              activeTab === "dashboard"
+              activeTab === "dashboard" && !isSettingsPanelOpen
                 ? "nav-item-active"
                 : "text-muted-foreground hover:text-foreground hover:bg-white/10"
             }`}
@@ -83,9 +113,9 @@ const Index = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab("toolkit")}
+            onClick={() => { setActiveTab("toolkit"); if (isSettingsPanelOpen) toggleSettingsPanel(); }}
             className={`flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 ${
-              activeTab === "toolkit"
+              activeTab === "toolkit" && !isSettingsPanelOpen
                 ? "nav-item-active"
                 : "text-muted-foreground hover:text-foreground hover:bg-white/10"
             }`}
@@ -95,9 +125,9 @@ const Index = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab("library")}
+            onClick={() => { setActiveTab("library"); if (isSettingsPanelOpen) toggleSettingsPanel(); }}
             className={`flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 ${
-              activeTab === "library"
+              activeTab === "library" && !isSettingsPanelOpen
                 ? "nav-item-active"
                 : "text-muted-foreground hover:text-foreground hover:bg-white/10"
             }`}
@@ -119,9 +149,9 @@ const Index = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab("bookmarks")}
+            onClick={() => { setActiveTab("bookmarks"); if (isSettingsPanelOpen) toggleSettingsPanel(); }}
             className={`flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 ${
-              activeTab === "bookmarks"
+              activeTab === "bookmarks" && !isSettingsPanelOpen
                 ? "nav-item-active"
                 : "text-muted-foreground hover:text-foreground hover:bg-white/10"
             }`}

@@ -35,16 +35,7 @@ const DashboardLoader = () => (
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
-  const [mood, setMood] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-
-  const moodOptions = [
-    { emoji: "😊", label: "Happy" },
-    { emoji: "😌", label: "Calm" },
-    { emoji: "😔", label: "Sad" },
-    { emoji: "😰", label: "Anxious" },
-    { emoji: "😤", label: "Frustrated" }
-  ];
 
   const featureCards = [
     {
@@ -146,37 +137,6 @@ const Index = () => {
                     {mounted && <ProgressDashboard />}
                   </Suspense>
                   
-                  <AnimatePresence>
-                    {mounted && (
-                      <motion.section 
-                        variants={container}
-                        initial="hidden"
-                        animate="show"
-                        className="mt-8"
-                      >
-                        <h3 className="text-lg font-medium text-foreground mb-4 tracking-tight">How are you feeling?</h3>
-                        <div className="flex flex-wrap gap-4 mb-8">
-                          {moodOptions.map((option) => (
-                            <motion.button
-                              key={option.label}
-                              onClick={() => setMood(option.label)}
-                              className={`flex flex-col items-center p-4 rounded-lg transition-all ${
-                                mood === option.label
-                                  ? "bg-primary/10 border-2 border-primary shadow-md"
-                                  : "bg-secondary/50 border-2 border-transparent hover:bg-secondary"
-                              }`}
-                              whileHover={{ scale: 1.03 }}
-                              whileTap={{ scale: 0.97 }}
-                            >
-                              <span className="text-2xl mb-1">{option.emoji}</span>
-                              <span className="text-sm text-foreground/80 font-medium tracking-wide">{option.label}</span>
-                            </motion.button>
-                          ))}
-                        </div>
-                      </motion.section>
-                    )}
-                  </AnimatePresence>
-
                   <AnimatePresence>
                     {mounted && (
                       <motion.div 

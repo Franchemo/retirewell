@@ -32,20 +32,36 @@ const DashboardLoader = () => (
   </div>
 );
 
-// Define interface for component props
-interface IndexProps {
-  isSafari?: boolean;
+// Define interface for browser capabilities
+interface BrowserCapabilities {
+  isSafari: boolean;
+  isIOS: boolean;
+  isOldBrowser: boolean;
+  hasLocalStorage: boolean;
+  supportsPromises: boolean;
 }
 
-const Index = ({ isSafari }: IndexProps = {}) => {
+// Define interface for component props
+interface IndexProps {
+  browserCapabilities?: BrowserCapabilities;
+}
+
+const Index = ({ browserCapabilities }: IndexProps) => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<Error | null>(null);
+  
   const isMobile = useIsMobile();
   const detectedIsSafari = useIsSafari();
   
   // Use the prop if provided, otherwise use the hook detection
-  const isBrowserSafari = isSafari !== undefined ? isSafari : detectedIsSafari;
+  const isSafari = browserCapabilities?.isSafari !== undefined 
+    ? browserCapabilities.isSafari 
+    : detectedIsSafari;
+    
+  const isIOS = browserCapabilities?.isIOS || false;
 
   const featureCards = [
     {
@@ -72,18 +88,75 @@ const Index = ({ isSafari }: IndexProps = {}) => {
     }
   ];
 
-  // Progressive mounting of components
+  // Progressive mounting of components with error handling
   useEffect(() => {
-    // Use a small delay before mounting components to ensure smooth rendering
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 100);
-
-    return () => clearTimeout(timer);
+    let isMounted = true;
+    
+    const initializeComponents = async () => {
+      try {
+        // Simulate any async initialization that might be needed
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        if (isMounted) {
+          setMounted(true);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error initializing components:", error);
+        if (isMounted) {
+          setLoadError(error instanceof Error ? error : new Error("Failed to initialize components"));
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    initializeComponents();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Apply iOS-specific height fix
+  useEffect(() => {
+    if (isIOS) {
+      const fixIOSHeight = () => {
+        // Fix for iOS 100vh issue
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      window.addEventListener('resize', fixIOSHeight);
+      window.addEventListener('orientationchange', fixIOSHeight);
+      fixIOSHeight();
+      
+      return () => {
+        window.removeEventListener('resize', fixIOSHeight);
+        window.removeEventListener('orientationchange', fixIOSHeight);
+      };
+    }
+  }, [isIOS]);
+
+  // Display loading error if needed
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-md p-6 bg-white rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-red-600 mb-4">Failed to load dashboard</h2>
+          <p className="text-gray-700 mb-4">{loadError.message}</p>
+          <button
+            className="px-4 py-2 bg-primary text-white rounded-lg"
+            onClick={() => window.location.reload()}
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`min-h-screen bg-gradient-to-b from-background via-background to-secondary/20 ${isBrowserSafari ? 'safari-height-fix' : ''}`}>
+    <div className={`min-h-screen bg-gradient-to-b from-background via-background to-secondary/20 ${isSafari ? 'safari-height-fix' : ''} ${isIOS ? 'ios-height-fix' : ''}`}>
       {/* Top Navigation */}
       <motion.nav 
         className="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-white/20"
@@ -161,7 +234,7 @@ const Index = ({ isSafari }: IndexProps = {}) => {
                             <div key={card.title}>
                               {card.content ? (
                                 <motion.div
-                                  whileHover={{ scale: 1.03, y: -5 }}
+                                  whileHover={{ scale: isMobile ? 1 : 1.03, y: isMobile ? 0 : -5 }}
                                   whileTap={{ scale: 0.98 }}
                                   className="content-card h-full transition-shadow duration-300 hover:shadow-xl"
                                 >
@@ -175,7 +248,7 @@ const Index = ({ isSafari }: IndexProps = {}) => {
                               ) : (
                                 <Link to={card.path}>
                                   <motion.div
-                                    whileHover={{ scale: 1.03, y: -5 }}
+                                    whileHover={{ scale: isMobile ? 1 : 1.03, y: isMobile ? 0 : -5 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="content-card h-full transition-shadow duration-300 hover:shadow-xl"
                                   >
@@ -298,16 +371,6 @@ const Index = ({ isSafari }: IndexProps = {}) => {
       </motion.div>
     </div>
   );
-};
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
 };
 
 export default Index;

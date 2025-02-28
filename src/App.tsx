@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -92,7 +91,7 @@ const App = () => {
           <BrowserRouter>
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Index isSafari={isSafari} />} />
+                <Route path="/" element={<Index />} />
                 <Route path="/dashboard" element={<Navigate to="/" replace />} />
                 <Route path="/reflection-journal" element={<ReflectionJournal />} />
                 <Route path="/health-assistant" element={<HealthAssistant />} />

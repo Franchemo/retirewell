@@ -1,4 +1,3 @@
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, Suspense, lazy } from "react";
 import { Heart, Settings, BookOpen, Award, MessageCircle } from "lucide-react"; 
@@ -10,7 +9,7 @@ import { WellnessToolkit } from "@/components/WellnessToolkit";
 import { PersonalizationSettings } from "@/components/PersonalizationSettings";
 import { MilestoneCelebration } from "@/components/MilestoneCelebration";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile, useIsSafari } from "@/hooks/use-mobile";
 
 // Lazy load the ProgressDashboard for better initial load time
 const ProgressDashboard = lazy(() => import("@/components/ProgressDashboard").then(
@@ -33,11 +32,20 @@ const DashboardLoader = () => (
   </div>
 );
 
-const Index = () => {
+// Define interface for component props
+interface IndexProps {
+  isSafari?: boolean;
+}
+
+const Index = ({ isSafari }: IndexProps = {}) => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
+  const detectedIsSafari = useIsSafari();
+  
+  // Use the prop if provided, otherwise use the hook detection
+  const isBrowserSafari = isSafari !== undefined ? isSafari : detectedIsSafari;
 
   const featureCards = [
     {
@@ -75,7 +83,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/20">
+    <div className={`min-h-screen bg-gradient-to-b from-background via-background to-secondary/20 ${isBrowserSafari ? 'safari-height-fix' : ''}`}>
       {/* Top Navigation */}
       <motion.nav 
         className="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-white/20"

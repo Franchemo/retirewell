@@ -10,6 +10,7 @@ import { WellnessToolkit } from "@/components/WellnessToolkit";
 import { PersonalizationSettings } from "@/components/PersonalizationSettings";
 import { MilestoneCelebration } from "@/components/MilestoneCelebration";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Lazy load the ProgressDashboard for better initial load time
 const ProgressDashboard = lazy(() => import("@/components/ProgressDashboard").then(
@@ -36,6 +37,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
 
   const featureCards = [
     {

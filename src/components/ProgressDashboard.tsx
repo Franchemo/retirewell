@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { Brain, Calendar, TrendingUp, Target, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const container = {
   hidden: { opacity: 0 },
@@ -46,6 +47,7 @@ export const ProgressDashboard = () => {
     weekly: []
   });
   const [suggestedContent, setSuggestedContent] = useState([]);
+  const isMobile = useIsMobile();
 
   // Simulate data loading with improved error handling
   useEffect(() => {
@@ -131,17 +133,17 @@ export const ProgressDashboard = () => {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-8"
+      className="space-y-6"
     >
       {/* Welcome Section with Today's Focus */}
       <motion.div 
         variants={item} 
-        className="bg-gradient-to-r from-[#4B4E8E] to-[#6E72C7] rounded-xl p-6 text-white shadow-lg shadow-[#4B4E8E]/15"
+        className="bg-gradient-to-r from-[#4B4E8E] to-[#6E72C7] rounded-xl p-4 sm:p-6 text-white shadow-lg shadow-[#4B4E8E]/15"
       >
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Welcome Back</h2>
-            <p className="mt-2 opacity-90">Your journey continues with strength and resilience</p>
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Welcome Back</h2>
+            <p className="mt-2 opacity-90 text-sm sm:text-base">Your journey continues with strength and resilience</p>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -154,20 +156,20 @@ export const ProgressDashboard = () => {
         
         <div className="mt-6">
           <h3 className="text-lg font-medium mb-3 tracking-tight">Today's Focus</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {suggestedContent.map((content, index) => (
               <motion.div
                 key={index}
                 whileHover={{ scale: 1.02, y: -2 }}
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-4 cursor-pointer border border-white/10 shadow-md shadow-black/5 transition-all duration-300"
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-4 cursor-pointer border border-white/10 shadow-md shadow-black/5 transition-all duration-300 touch-target"
               >
                 <div className="flex items-center">
-                  <content.icon className="w-5 h-5 mr-3" />
-                  <div>
-                    <h4 className="font-medium tracking-tight">{content.title}</h4>
-                    <p className="text-sm opacity-90">{content.duration}</p>
+                  <content.icon className="w-5 h-5 mr-3 flex-shrink-0" />
+                  <div className="flex-grow min-w-0">
+                    <h4 className="font-medium tracking-tight text-sm sm:text-base truncate">{content.title}</h4>
+                    <p className="text-xs sm:text-sm opacity-90 truncate">{content.duration}</p>
                   </div>
-                  <ArrowRight className="w-4 h-4 ml-auto" />
+                  <ArrowRight className="w-4 h-4 ml-auto flex-shrink-0" />
                 </div>
               </motion.div>
             ))}
@@ -176,13 +178,13 @@ export const ProgressDashboard = () => {
       </motion.div>
 
       {/* Charts Section */}
-      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Treatment Progress Chart */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-4 tracking-tight">Treatment Progress</h3>
-          <div className="h-64">
+          <div className={isMobile ? "h-52" : "h-64"}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={progressData}>
+              <AreaChart data={progressData} margin={{ top: 5, right: 5, bottom: 5, left: isMobile ? -15 : 0 }}>
                 <defs>
                   <linearGradient id="progressColor" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4B4E8E" stopOpacity={0.3}/>
@@ -190,8 +192,15 @@ export const ProgressDashboard = () => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" tick={{ fill: '#666', fontSize: 12 }} />
-                <YAxis tick={{ fill: '#666', fontSize: 12 }} />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fill: '#666', fontSize: isMobile ? 10 : 12 }} 
+                  tickMargin={5}
+                />
+                <YAxis 
+                  tick={{ fill: '#666', fontSize: isMobile ? 10 : 12 }} 
+                  width={isMobile ? 25 : 35}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <Area 
                   type="monotone" 
@@ -207,46 +216,54 @@ export const ProgressDashboard = () => {
         </div>
 
         {/* Wellness Score Chart */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
-          <div className="flex justify-between items-center mb-4">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2 sm:gap-0">
             <h3 className="text-lg font-medium text-gray-900 tracking-tight">Wellness Score</h3>
             <div className="flex space-x-2">
               <button
                 onClick={() => setTimeframe("daily")}
-                className={`px-3 py-1 rounded-full text-sm ${
+                className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm ${
                   timeframe === "daily"
                     ? "bg-[#4B4E8E] text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                } transition-all duration-300`}
+                } transition-all duration-300 touch-target`}
               >
                 Daily
               </button>
               <button
                 onClick={() => setTimeframe("weekly")}
-                className={`px-3 py-1 rounded-full text-sm ${
+                className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm ${
                   timeframe === "weekly"
                     ? "bg-[#4B4E8E] text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                } transition-all duration-300`}
+                } transition-all duration-300 touch-target`}
               >
                 Weekly
               </button>
             </div>
           </div>
-          <div className="h-64">
+          <div className={isMobile ? "h-52" : "h-64"}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={wellnessData[timeframe]}>
+              <LineChart data={wellnessData[timeframe]} margin={{ top: 5, right: 5, bottom: 5, left: isMobile ? -15 : 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="day" tick={{ fill: '#666', fontSize: 12 }} />
-                <YAxis domain={[0, 100]} tick={{ fill: '#666', fontSize: 12 }} />
+                <XAxis 
+                  dataKey="day" 
+                  tick={{ fill: '#666', fontSize: isMobile ? 10 : 12 }} 
+                  tickMargin={5}
+                />
+                <YAxis 
+                  domain={[0, 100]} 
+                  tick={{ fill: '#666', fontSize: isMobile ? 10 : 12 }} 
+                  width={isMobile ? 25 : 35}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="score" 
                   stroke="#4B4E8E" 
                   strokeWidth={2}
-                  dot={{ fill: '#4B4E8E', strokeWidth: 2, r: 4, strokeDasharray: '' }}
-                  activeDot={{ fill: '#4B4E8E', strokeWidth: 0, r: 6 }}
+                  dot={{ fill: '#4B4E8E', strokeWidth: 2, r: isMobile ? 3 : 4, strokeDasharray: '' }}
+                  activeDot={{ fill: '#4B4E8E', strokeWidth: 0, r: isMobile ? 5 : 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -255,48 +272,48 @@ export const ProgressDashboard = () => {
       </motion.div>
 
       {/* Key Metrics */}
-      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <motion.div
           whileHover={{ scale: 1.02, y: -2 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
+          className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-[#4B4E8E]/10 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-[#4B4E8E]" />
+              <TrendingUp className="w-5 h-5 text-[#4B4E8E]" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Weekly Progress</p>
-              <h4 className="text-xl font-semibold text-gray-900">85%</h4>
+              <p className="text-xs sm:text-sm text-gray-600">Weekly Progress</p>
+              <h4 className="text-lg sm:text-xl font-semibold text-gray-900">85%</h4>
             </div>
           </div>
         </motion.div>
 
         <motion.div
           whileHover={{ scale: 1.02, y: -2 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
+          className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-[#4B4E8E]/10 rounded-lg">
-              <Calendar className="w-6 h-6 text-[#4B4E8E]" />
+              <Calendar className="w-5 h-5 text-[#4B4E8E]" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Streak</p>
-              <h4 className="text-xl font-semibold text-gray-900">7 days</h4>
+              <p className="text-xs sm:text-sm text-gray-600">Streak</p>
+              <h4 className="text-lg sm:text-xl font-semibold text-gray-900">7 days</h4>
             </div>
           </div>
         </motion.div>
 
         <motion.div
           whileHover={{ scale: 1.02, y: -2 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
+          className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-[#4B4E8E]/10 rounded-lg">
-              <Target className="w-6 h-6 text-[#4B4E8E]" />
+              <Target className="w-5 h-5 text-[#4B4E8E]" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Goals Met</p>
-              <h4 className="text-xl font-semibold text-gray-900">12/15</h4>
+              <p className="text-xs sm:text-sm text-gray-600">Goals Met</p>
+              <h4 className="text-lg sm:text-xl font-semibold text-gray-900">12/15</h4>
             </div>
           </div>
         </motion.div>

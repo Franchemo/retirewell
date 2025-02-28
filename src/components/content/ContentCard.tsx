@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Book, Heart } from "lucide-react";
+import { useIsSafari } from "@/hooks/use-mobile";
 
 export interface ContentItem {
   id: string;
@@ -19,9 +20,14 @@ interface ContentCardProps {
 }
 
 export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
+  const isSafari = useIsSafari();
+  
+  // Apply Safari-specific class if needed
+  const cardClass = `content-card ${isSafari ? 'safari-backdrop-fix' : ''}`;
+  
   return (
     <motion.div
-      className="content-card"
+      className={cardClass}
       whileHover={{ scale: 1.02 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -36,7 +42,7 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
               <Book className="w-4 h-4 mr-1" />
               {content.duration}
             </span>
-            <span className="px-3 py-1 rounded-full frosted-glass text-xs font-medium">
+            <span className={`px-3 py-1 rounded-full frosted-glass text-xs font-medium ${isSafari ? 'safari-backdrop-fix' : ''}`}>
               {content.difficulty}
             </span>
           </div>
@@ -64,7 +70,7 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
           className={`ml-4 p-2 rounded-full transition-all duration-300 ${
             content.isBookmarked
               ? "bg-red-50 text-red-500 hover:bg-red-100 hover:shadow-lg"
-              : "frosted-glass text-muted-foreground hover:text-foreground hover:shadow-lg"
+              : `frosted-glass text-muted-foreground hover:text-foreground hover:shadow-lg ${isSafari ? 'safari-backdrop-fix' : ''}`
           }`}
         >
           <Heart className="w-5 h-5" />

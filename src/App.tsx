@@ -16,7 +16,7 @@ const HealthAssistant = lazy(() => import("./pages/HealthAssistant"));
 
 // Create a more sophisticated loading component
 const PageLoader = () => (
-  <div className="min-h-screen w-full flex items-center justify-center bg-background">
+  <div className="min-h-screen w-full flex items-center justify-center bg-background safari-height-fix">
     <div className="flex flex-col items-center">
       <div className="w-12 h-12 rounded-full border-4 border-primary/30 border-t-primary animate-spin mb-4"></div>
       <p className="text-foreground/70 animate-pulse">Loading your content...</p>
@@ -35,9 +35,41 @@ const queryClient = new QueryClient({
   },
 });
 
+// Safari detection utility
+const detectSafari = () => {
+  const ua = navigator.userAgent.toLowerCase();
+  return ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1;
+};
+
 const App = () => {
   const [hasCheckedWelcome, setHasCheckedWelcome] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
+
+  // Detect Safari browser
+  useEffect(() => {
+    setIsSafari(detectSafari());
+  }, []);
+
+  // Apply Safari-specific fixes
+  useEffect(() => {
+    if (isSafari) {
+      // Add Safari class to body for specific CSS targeting
+      document.body.classList.add('safari-browser');
+      
+      // Fix for Safari height issues
+      document.documentElement.classList.add('safari-height-fix');
+      document.body.classList.add('safari-height-fix');
+    }
+    
+    return () => {
+      if (isSafari) {
+        document.body.classList.remove('safari-browser');
+        document.documentElement.classList.remove('safari-height-fix');
+        document.body.classList.remove('safari-height-fix');
+      }
+    };
+  }, [isSafari]);
 
   // Check if user has seen welcome screen
   useEffect(() => {
@@ -60,7 +92,7 @@ const App = () => {
           <BrowserRouter>
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Index isSafari={isSafari} />} />
                 <Route path="/dashboard" element={<Navigate to="/" replace />} />
                 <Route path="/reflection-journal" element={<ReflectionJournal />} />
                 <Route path="/health-assistant" element={<HealthAssistant />} />

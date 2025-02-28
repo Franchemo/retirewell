@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { Brain, Calendar, TrendingUp, Target, ArrowRight } from 'lucide-react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const container = {
   hidden: { opacity: 0 },
@@ -39,46 +39,92 @@ const CustomTooltip = ({
 
 export const ProgressDashboard = () => {
   const [timeframe, setTimeframe] = useState<"daily" | "weekly">("daily");
+  const [isLoading, setIsLoading] = useState(true);
+  const [progressData, setProgressData] = useState([]);
+  const [wellnessData, setWellnessData] = useState({
+    daily: [],
+    weekly: []
+  });
+  const [suggestedContent, setSuggestedContent] = useState([]);
 
-  const progressData = [
-    { date: 'Week 1', progress: 30 },
-    { date: 'Week 2', progress: 45 },
-    { date: 'Week 3', progress: 65 },
-    { date: 'Week 4', progress: 85 },
-  ];
+  // Simulate data loading with improved error handling
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Simulate API fetch with timeout
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Progress data
+        setProgressData([
+          { date: 'Week 1', progress: 30 },
+          { date: 'Week 2', progress: 45 },
+          { date: 'Week 3', progress: 65 },
+          { date: 'Week 4', progress: 85 },
+        ]);
+        
+        // Wellness data
+        setWellnessData({
+          daily: [
+            { day: 'Mon', score: 75 },
+            { day: 'Tue', score: 82 },
+            { day: 'Wed', score: 78 },
+            { day: 'Thu', score: 85 },
+            { day: 'Fri', score: 80 },
+            { day: 'Sat', score: 88 },
+            { day: 'Sun', score: 85 },
+          ],
+          weekly: [
+            { day: 'Week 1', score: 72 },
+            { day: 'Week 2', score: 78 },
+            { day: 'Week 3', score: 82 },
+            { day: 'Week 4', score: 85 },
+          ]
+        });
+        
+        // Suggested content
+        setSuggestedContent([
+          {
+            title: "Morning Mindfulness",
+            type: "meditation",
+            duration: "10 min",
+            icon: Brain,
+          },
+          {
+            title: "Stress Relief Exercise",
+            type: "exercise",
+            duration: "15 min",
+            icon: Target,
+          }
+        ]);
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+        setIsLoading(false);
+        // In a real app, you would handle the error properly here
+      }
+    };
 
-  const wellnessData = {
-    daily: [
-      { day: 'Mon', score: 75 },
-      { day: 'Tue', score: 82 },
-      { day: 'Wed', score: 78 },
-      { day: 'Thu', score: 85 },
-      { day: 'Fri', score: 80 },
-      { day: 'Sat', score: 88 },
-      { day: 'Sun', score: 85 },
-    ],
-    weekly: [
-      { day: 'Week 1', score: 72 },
-      { day: 'Week 2', score: 78 },
-      { day: 'Week 3', score: 82 },
-      { day: 'Week 4', score: 85 },
-    ]
-  };
+    loadDashboardData();
+  }, []);
 
-  const suggestedContent = [
-    {
-      title: "Morning Mindfulness",
-      type: "meditation",
-      duration: "10 min",
-      icon: Brain,
-    },
-    {
-      title: "Stress Relief Exercise",
-      type: "exercise",
-      duration: "15 min",
-      icon: Target,
-    }
-  ];
+  // Loading state with skeleton UI
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="bg-gradient-to-r from-secondary/50 to-secondary/30 h-48 rounded-xl w-full"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white h-64 rounded-xl border border-gray-100"></div>
+          <div className="bg-white h-64 rounded-xl border border-gray-100"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white h-24 rounded-xl border border-gray-100"></div>
+          <div className="bg-white h-24 rounded-xl border border-gray-100"></div>
+          <div className="bg-white h-24 rounded-xl border border-gray-100"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -88,10 +134,13 @@ export const ProgressDashboard = () => {
       className="space-y-8"
     >
       {/* Welcome Section with Today's Focus */}
-      <motion.div variants={item} className="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white">
+      <motion.div 
+        variants={item} 
+        className="bg-gradient-to-r from-[#4B4E8E] to-[#6E72C7] rounded-xl p-6 text-white shadow-lg shadow-[#4B4E8E]/15"
+      >
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-semibold">Welcome Back</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">Welcome Back</h2>
             <p className="mt-2 opacity-90">Your journey continues with strength and resilience</p>
           </div>
           <motion.button
@@ -104,18 +153,18 @@ export const ProgressDashboard = () => {
         </div>
         
         <div className="mt-6">
-          <h3 className="text-lg font-medium mb-3">Today's Focus</h3>
+          <h3 className="text-lg font-medium mb-3 tracking-tight">Today's Focus</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {suggestedContent.map((content, index) => (
               <motion.div
                 key={index}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-4 cursor-pointer"
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-4 cursor-pointer border border-white/10 shadow-md shadow-black/5 transition-all duration-300"
               >
                 <div className="flex items-center">
                   <content.icon className="w-5 h-5 mr-3" />
                   <div>
-                    <h4 className="font-medium">{content.title}</h4>
+                    <h4 className="font-medium tracking-tight">{content.title}</h4>
                     <p className="text-sm opacity-90">{content.duration}</p>
                   </div>
                   <ArrowRight className="w-4 h-4 ml-auto" />
@@ -129,25 +178,26 @@ export const ProgressDashboard = () => {
       {/* Charts Section */}
       <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Treatment Progress Chart */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Treatment Progress</h3>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+          <h3 className="text-lg font-medium text-gray-900 mb-4 tracking-tight">Treatment Progress</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={progressData}>
                 <defs>
                   <linearGradient id="progressColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#4B4E8E" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#4B4E8E" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="date" tick={{ fill: '#666', fontSize: 12 }} />
+                <YAxis tick={{ fill: '#666', fontSize: 12 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area 
                   type="monotone" 
                   dataKey="progress" 
-                  stroke="#14b8a6" 
+                  stroke="#4B4E8E" 
+                  strokeWidth={2}
                   fillOpacity={1} 
                   fill="url(#progressColor)" 
                 />
@@ -157,17 +207,17 @@ export const ProgressDashboard = () => {
         </div>
 
         {/* Wellness Score Chart */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Wellness Score</h3>
+            <h3 className="text-lg font-medium text-gray-900 tracking-tight">Wellness Score</h3>
             <div className="flex space-x-2">
               <button
                 onClick={() => setTimeframe("daily")}
                 className={`px-3 py-1 rounded-full text-sm ${
                   timeframe === "daily"
-                    ? "bg-teal-500 text-white"
+                    ? "bg-[#4B4E8E] text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                } transition-all duration-300`}
               >
                 Daily
               </button>
@@ -175,9 +225,9 @@ export const ProgressDashboard = () => {
                 onClick={() => setTimeframe("weekly")}
                 className={`px-3 py-1 rounded-full text-sm ${
                   timeframe === "weekly"
-                    ? "bg-teal-500 text-white"
+                    ? "bg-[#4B4E8E] text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
+                } transition-all duration-300`}
               >
                 Weekly
               </button>
@@ -186,16 +236,17 @@ export const ProgressDashboard = () => {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={wellnessData[timeframe]}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis domain={[0, 100]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="day" tick={{ fill: '#666', fontSize: 12 }} />
+                <YAxis domain={[0, 100]} tick={{ fill: '#666', fontSize: 12 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="score" 
-                  stroke="#14b8a6" 
+                  stroke="#4B4E8E" 
                   strokeWidth={2}
-                  dot={{ fill: '#14b8a6' }}
+                  dot={{ fill: '#4B4E8E', strokeWidth: 2, r: 4, strokeDasharray: '' }}
+                  activeDot={{ fill: '#4B4E8E', strokeWidth: 0, r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -206,12 +257,12 @@ export const ProgressDashboard = () => {
       {/* Key Metrics */}
       <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+          whileHover={{ scale: 1.02, y: -2 }}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-teal-100 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-teal-600" />
+            <div className="p-2 bg-[#4B4E8E]/10 rounded-lg">
+              <TrendingUp className="w-6 h-6 text-[#4B4E8E]" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Weekly Progress</p>
@@ -221,12 +272,12 @@ export const ProgressDashboard = () => {
         </motion.div>
 
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+          whileHover={{ scale: 1.02, y: -2 }}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-teal-100 rounded-lg">
-              <Calendar className="w-6 h-6 text-teal-600" />
+            <div className="p-2 bg-[#4B4E8E]/10 rounded-lg">
+              <Calendar className="w-6 h-6 text-[#4B4E8E]" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Streak</p>
@@ -236,12 +287,12 @@ export const ProgressDashboard = () => {
         </motion.div>
 
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+          whileHover={{ scale: 1.02, y: -2 }}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-teal-100 rounded-lg">
-              <Target className="w-6 h-6 text-teal-600" />
+            <div className="p-2 bg-[#4B4E8E]/10 rounded-lg">
+              <Target className="w-6 h-6 text-[#4B4E8E]" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Goals Met</p>
@@ -253,3 +304,5 @@ export const ProgressDashboard = () => {
     </motion.div>
   );
 };
+
+export default ProgressDashboard;

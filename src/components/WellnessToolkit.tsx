@@ -2,6 +2,8 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Circle, Heart, Brain, Shield, Book, MessageCircle } from "lucide-react";
+import { MilestoneCelebration } from "./MilestoneCelebration";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 
 const container = {
@@ -22,7 +24,16 @@ const item = {
 export const WellnessToolkit = () => {
   const [breathCount, setBreathCount] = useState(0);
   const [isBreathing, setIsBreathing] = useState(false);
+  const [mood, setMood] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const moodOptions = [
+    { emoji: "😊", label: "Happy" },
+    { emoji: "😌", label: "Calm" },
+    { emoji: "😔", label: "Sad" },
+    { emoji: "😰", label: "Anxious" },
+    { emoji: "😤", label: "Frustrated" }
+  ];
 
   const quickTools = [
     {
@@ -134,6 +145,26 @@ export const WellnessToolkit = () => {
       )}
 
       <motion.section variants={item}>
+        <h3 className="text-lg font-medium text-foreground mb-4">How are you feeling?</h3>
+        <div className="flex flex-wrap gap-4">
+          {moodOptions.map((option) => (
+            <button
+              key={option.label}
+              onClick={() => setMood(option.label)}
+              className={`flex flex-col items-center p-4 rounded-lg transition-all ${
+                mood === option.label
+                  ? "bg-primary/10 border-2 border-primary"
+                  : "bg-secondary/50 border-2 border-transparent hover:bg-secondary"
+              }`}
+            >
+              <span className="text-2xl mb-1">{option.emoji}</span>
+              <span className="text-sm text-foreground/80">{option.label}</span>
+            </button>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section variants={item}>
         <h3 className="text-lg font-medium text-foreground">Quick Tools</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {quickTools.map((tool) => (
@@ -152,6 +183,10 @@ export const WellnessToolkit = () => {
             </motion.button>
           ))}
         </div>
+      </motion.section>
+
+      <motion.section variants={item}>
+        <MilestoneCelebration />
       </motion.section>
     </motion.div>
   );

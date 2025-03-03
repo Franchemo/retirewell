@@ -1,88 +1,18 @@
-
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="theme-color" content="#ffffff" />
-    
-    <!-- PWA related meta tags -->
-    <meta name="application-name" content="AugMend Health" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="AugMend Health" />
-    
-    <title>AugMend Health</title>
-    <meta name="description" content="Your personal health and wellness companion" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mindtrack-library</title>
+    <meta name="description" content="Lovable Generated Project" />
     <meta name="author" content="Lovable" />
     <meta property="og:image" content="/og-image.png" />
-    
-    <!-- Preconnect to critical origins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Prevent auto zooming on input fields on iOS -->
-    <script>
-      // Fix for iOS input focus zooming
-      document.addEventListener('touchstart', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-          if (e.target.type !== 'checkbox' && e.target.type !== 'radio') {
-            e.target.style.fontSize = '16px';
-          }
-        }
-      }, false);
-      
-      // Feature detection and polyfills
-      if (!('Promise' in window)) {
-        console.warn('Browser does not support Promises. Some features may not work correctly.');
-      }
-      
-      // Handle service worker errors
-      window.addEventListener('error', function(e) {
-        console.error('Global error caught:', e.message);
-      });
-      
-      // Fix for 100vh on mobile browsers
-      function setVhProperty() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      }
-      
-      window.addEventListener('resize', setVhProperty);
-      window.addEventListener('orientationchange', setVhProperty);
-      setVhProperty();
-    </script>
   </head>
 
-  <body class="h-full">
-    <div id="root" class="h-full"></div>
+  <body>
+    <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Offline status detection -->
-    <script>
-      function updateOnlineStatus() {
-        const offlineElement = document.getElementById('offline-indicator');
-        
-        if (!navigator.onLine) {
-          if (!offlineElement) {
-            const indicator = document.createElement('div');
-            indicator.id = 'offline-indicator';
-            indicator.className = 'offline-indicator';
-            indicator.textContent = 'You are offline. Some features may be unavailable.';
-            document.body.appendChild(indicator);
-          }
-        } else if (offlineElement) {
-          offlineElement.remove();
-        }
-      }
-
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-      updateOnlineStatus();
-    </script>
   </body>
 </html>

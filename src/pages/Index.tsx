@@ -1,67 +1,19 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, Suspense, lazy } from "react";
+
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { Heart, Settings, BookOpen, Award, MessageCircle } from "lucide-react"; 
 import { Link } from "react-router-dom";
 import { BookmarkedContent } from "@/components/BookmarkedContent";
+import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { ContentLibrary } from "@/components/ContentLibrary";
 import { Notifications } from "@/components/Notifications";
 import { WellnessToolkit } from "@/components/WellnessToolkit";
 import { PersonalizationSettings } from "@/components/PersonalizationSettings";
-import { MilestoneCelebration } from "@/components/MilestoneCelebration";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useIsMobile, useIsSafari } from "@/hooks/use-mobile";
 
-// Lazy load the ProgressDashboard for better initial load time
-const ProgressDashboard = lazy(() => import("@/components/ProgressDashboard").then(
-  module => ({ default: module.ProgressDashboard })
-));
-
-// Component loader with skeleton
-const DashboardLoader = () => (
-  <div className="space-y-8 animate-pulse">
-    <div className="bg-secondary/50 h-48 rounded-xl w-full"></div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="bg-secondary/50 h-64 rounded-xl"></div>
-      <div className="bg-secondary/50 h-64 rounded-xl"></div>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="bg-secondary/50 h-24 rounded-xl"></div>
-      <div className="bg-secondary/50 h-24 rounded-xl"></div>
-      <div className="bg-secondary/50 h-24 rounded-xl"></div>
-    </div>
-  </div>
-);
-
-// Define interface for browser capabilities
-interface BrowserCapabilities {
-  isSafari: boolean;
-  isIOS: boolean;
-  isOldBrowser: boolean;
-  hasLocalStorage: boolean;
-  supportsPromises: boolean;
-}
-
-// Define interface for component props
-interface IndexProps {
-  browserCapabilities?: BrowserCapabilities;
-}
-
-const Index = ({ browserCapabilities }: IndexProps) => {
+const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { isSettingsPanelOpen, toggleSettingsPanel } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<Error | null>(null);
-  
-  const isMobile = useIsMobile();
-  const detectedIsSafari = useIsSafari();
-  
-  // Use the prop if provided, otherwise use the hook detection
-  const isSafari = browserCapabilities?.isSafari !== undefined 
-    ? browserCapabilities.isSafari 
-    : detectedIsSafari;
-    
-  const isIOS = browserCapabilities?.isIOS || false;
 
   const featureCards = [
     {
@@ -75,9 +27,8 @@ const Index = ({ browserCapabilities }: IndexProps) => {
       title: "Achievements",
       description: "Track your health milestones and celebrate progress",
       icon: Award,
-      path: "/",
-      color: "bg-attention/10 text-attention",
-      content: <MilestoneCelebration />
+      path: "/", // Currently just shows the milestone component
+      color: "bg-attention/10 text-attention"
     },
     {
       title: "Health Assistant",
@@ -88,99 +39,30 @@ const Index = ({ browserCapabilities }: IndexProps) => {
     }
   ];
 
-  // Progressive mounting of components with error handling
-  useEffect(() => {
-    let isMounted = true;
-    
-    const initializeComponents = async () => {
-      try {
-        // Simulate any async initialization that might be needed
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        if (isMounted) {
-          setMounted(true);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("Error initializing components:", error);
-        if (isMounted) {
-          setLoadError(error instanceof Error ? error : new Error("Failed to initialize components"));
-          setIsLoading(false);
-        }
-      }
-    };
-    
-    initializeComponents();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Apply iOS-specific height fix
-  useEffect(() => {
-    if (isIOS) {
-      const fixIOSHeight = () => {
-        // Fix for iOS 100vh issue
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      };
-      
-      window.addEventListener('resize', fixIOSHeight);
-      window.addEventListener('orientationchange', fixIOSHeight);
-      fixIOSHeight();
-      
-      return () => {
-        window.removeEventListener('resize', fixIOSHeight);
-        window.removeEventListener('orientationchange', fixIOSHeight);
-      };
-    }
-  }, [isIOS]);
-
-  // Display loading error if needed
-  if (loadError) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-md p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-red-600 mb-4">Failed to load dashboard</h2>
-          <p className="text-gray-700 mb-4">{loadError.message}</p>
-          <button
-            className="px-4 py-2 bg-primary text-white rounded-lg"
-            onClick={() => window.location.reload()}
-          >
-            Reload Page
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`min-h-screen bg-gradient-to-b from-background via-background to-secondary/20 ${isSafari ? 'safari-height-fix' : ''} ${isIOS ? 'ios-height-fix' : ''}`}>
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/20">
       {/* Top Navigation */}
       <motion.nav 
         className="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-white/20"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5 }}
       >
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-semibold text-gradient tracking-tight">
+              <h1 className="text-xl font-semibold text-gradient">
                 AugMend Health
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <motion.button 
+              <button 
                 onClick={toggleSettingsPanel}
                 className="p-2 rounded-full frosted-glass"
                 aria-label="Personalize Dashboard"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 <Settings className="w-5 h-5 text-foreground/70" />
-              </motion.button>
+              </button>
               <Notifications />
             </div>
           </div>
@@ -198,7 +80,7 @@ const Index = ({ browserCapabilities }: IndexProps) => {
               transition={{ duration: 0.3 }}
             >
               <div className="mb-6 flex justify-between items-center">
-                <h2 className="text-2xl font-medium text-gradient tracking-tight">Personalization Settings</h2>
+                <h2 className="text-2xl font-medium text-gradient">Personalization Settings</h2>
                 <button 
                   onClick={toggleSettingsPanel}
                   className="px-4 py-2 rounded-lg frosted-glass"
@@ -216,56 +98,27 @@ const Index = ({ browserCapabilities }: IndexProps) => {
             >
               {activeTab === "dashboard" && (
                 <>
-                  <Suspense fallback={<DashboardLoader />}>
-                    {mounted && <ProgressDashboard />}
-                  </Suspense>
-                  
-                  <AnimatePresence>
-                    {mounted && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        className="mt-8"
-                      >
-                        <h2 className="text-2xl font-medium text-gradient mb-4 tracking-tight">Featured Tools</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {featureCards.map((card) => (
-                            <div key={card.title}>
-                              {card.content ? (
-                                <motion.div
-                                  whileHover={{ scale: isMobile ? 1 : 1.03, y: isMobile ? 0 : -5 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  className="content-card h-full transition-shadow duration-300 hover:shadow-xl"
-                                >
-                                  <div className={`p-3 rounded-full w-12 h-12 mb-4 flex items-center justify-center ${card.color}`}>
-                                    <card.icon className="w-6 h-6" />
-                                  </div>
-                                  <h3 className="text-lg font-medium mb-2 tracking-tight">{card.title}</h3>
-                                  <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{card.description}</p>
-                                  {card.content}
-                                </motion.div>
-                              ) : (
-                                <Link to={card.path}>
-                                  <motion.div
-                                    whileHover={{ scale: isMobile ? 1 : 1.03, y: isMobile ? 0 : -5 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="content-card h-full transition-shadow duration-300 hover:shadow-xl"
-                                  >
-                                    <div className={`p-3 rounded-full w-12 h-12 mb-4 flex items-center justify-center ${card.color}`}>
-                                      <card.icon className="w-6 h-6" />
-                                    </div>
-                                    <h3 className="text-lg font-medium mb-2 tracking-tight">{card.title}</h3>
-                                    <p className="text-muted-foreground text-sm leading-relaxed">{card.description}</p>
-                                  </motion.div>
-                                </Link>
-                              )}
+                  <ProgressDashboard />
+                  <div className="mt-8">
+                    <h2 className="text-2xl font-medium text-gradient mb-4">Featured Tools</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {featureCards.map((card) => (
+                        <Link key={card.title} to={card.path}>
+                          <motion.div
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="content-card h-full"
+                          >
+                            <div className={`p-3 rounded-full w-12 h-12 mb-4 flex items-center justify-center ${card.color}`}>
+                              <card.icon className="w-6 h-6" />
                             </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                            <h3 className="text-lg font-medium mb-2">{card.title}</h3>
+                            <p className="text-muted-foreground text-sm">{card.description}</p>
+                          </motion.div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </>
               )}
               {activeTab === "toolkit" && <WellnessToolkit />}
@@ -305,7 +158,7 @@ const Index = ({ browserCapabilities }: IndexProps) => {
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
               />
             </svg>
-            <span className="text-xs mt-1 font-medium tracking-wide">Dashboard</span>
+            <span className="text-xs mt-1">Dashboard</span>
           </button>
 
           <button
@@ -317,7 +170,7 @@ const Index = ({ browserCapabilities }: IndexProps) => {
             }`}
           >
             <Heart className="w-5 h-5" />
-            <span className="text-xs mt-1 font-medium tracking-wide">Toolkit</span>
+            <span className="text-xs mt-1">Toolkit</span>
           </button>
 
           <button
@@ -341,7 +194,7 @@ const Index = ({ browserCapabilities }: IndexProps) => {
                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
               />
             </svg>
-            <span className="text-xs mt-1 font-medium tracking-wide">Library</span>
+            <span className="text-xs mt-1">Library</span>
           </button>
 
           <button
@@ -365,7 +218,7 @@ const Index = ({ browserCapabilities }: IndexProps) => {
                 d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
               />
             </svg>
-            <span className="text-xs mt-1 font-medium tracking-wide">Bookmarks</span>
+            <span className="text-xs mt-1">Bookmarks</span>
           </button>
         </div>
       </motion.div>

@@ -206,9 +206,6 @@
     @apply bg-background text-foreground antialiased selection:bg-primary/10;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
     transition: background-color 0.3s ease;
-    overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
-    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-    min-height: 100%; /* Fix for Safari height issues */
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -217,45 +214,26 @@
   }
   
   h1 {
-    font-size: calc(2rem * var(--text-scale));
+    font-size: calc(2.25rem * var(--text-scale));
     @apply bg-gradient-to-br from-foreground to-foreground/80 bg-clip-text text-transparent;
   }
   
   h2 {
-    font-size: calc(1.5rem * var(--text-scale));
+    font-size: calc(1.875rem * var(--text-scale));
   }
   
   h3 {
-    font-size: calc(1.25rem * var(--text-scale));
+    font-size: calc(1.5rem * var(--text-scale));
   }
   
   h4 {
-    font-size: calc(1.125rem * var(--text-scale));
+    font-size: calc(1.25rem * var(--text-scale));
   }
   
   p, span, button, a, li, input, textarea {
     transition: font-size 0.3s ease;
     font-size: calc(1rem * var(--text-scale));
     @apply leading-relaxed text-foreground/80;
-  }
-
-  /* Adjust text sizes to be more readable on mobile */
-  @media (max-width: 640px) {
-    h1 {
-      font-size: calc(1.75rem * var(--text-scale));
-    }
-    
-    h2 {
-      font-size: calc(1.375rem * var(--text-scale));
-    }
-    
-    h3 {
-      font-size: calc(1.125rem * var(--text-scale));
-    }
-    
-    h4 {
-      font-size: calc(1rem * var(--text-scale));
-    }
   }
 
   .text-xs {
@@ -286,10 +264,9 @@
 @layer components {
   .glass-card {
     @apply backdrop-blur-lg bg-white/80 border border-white/20 shadow-lg;
-    padding: calc(1.25rem * var(--spacing-scale));
-    border-radius: calc(0.75rem * var(--spacing-scale));
+    padding: calc(1.5rem * var(--spacing-scale));
+    border-radius: calc(1rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
-    transform: translateZ(0); /* Safari GPU acceleration fix */
   }
   
   .frosted-glass {
@@ -297,30 +274,20 @@
     padding: calc(0.5rem * var(--spacing-scale)) calc(0.75rem * var(--spacing-scale));
     border-radius: calc(1.5rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
-    transform: translateZ(0); /* Safari GPU acceleration fix */
   }
   
   .metric-card {
     @apply bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300;
-    padding: calc(1.25rem * var(--spacing-scale));
-    border-radius: calc(0.75rem * var(--spacing-scale));
+    padding: calc(1.5rem * var(--spacing-scale));
+    border-radius: calc(1rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
-    transform: translateZ(0); /* Safari GPU acceleration fix */
   }
   
   .content-card {
     @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300;
-    padding: calc(1.25rem * var(--spacing-scale));
-    border-radius: calc(0.75rem * var(--spacing-scale));
+    padding: calc(1.5rem * var(--spacing-scale));
+    border-radius: calc(1rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
-    transform: translateZ(0); /* Safari GPU acceleration fix */
-  }
-  
-  /* Adjust padding on mobile */
-  @media (max-width: 640px) {
-    .glass-card, .metric-card, .content-card {
-      padding: calc(1rem * var(--spacing-scale));
-    }
   }
   
   .nav-item {
@@ -361,7 +328,6 @@
   .glassmorphism {
     @apply backdrop-blur-xl bg-white/10 border border-white/20;
     transition: background-color 0.3s ease;
-    transform: translateZ(0); /* Safari GPU acceleration fix */
   }
   
   /* Theme preview classes */
@@ -373,155 +339,4 @@
   .theme-color-dot {
     @apply w-4 h-4 rounded-full;
   }
-  
-  /* Mobile optimization utilities */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  
-  .safe-top {
-    padding-top: env(safe-area-inset-top, 0px);
-  }
-}
-
-/* Improved scrolling experience on mobile */
-@supports (-webkit-overflow-scrolling: touch) {
-  .scroll-momentum {
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* Fix for mobile browser address bar resizing viewport */
-html, body {
-  height: 100%;
-  min-height: -webkit-fill-available;
-  min-height: 100vh;
-}
-
-/* Fix for iOS vh units */
-.ios-height-fix {
-  height: 100vh; /* Fallback */
-  height: calc(var(--vh, 1vh) * 100);
-}
-
-/* Fix for iOS notch */
-@supports (padding: max(0px)) {
-  .notch-padding {
-    padding-left: max(env(safe-area-inset-left), 1rem);
-    padding-right: max(env(safe-area-inset-right), 1rem);
-  }
-  
-  .notch-padding-bottom {
-    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
-  }
-}
-
-/* Safari specific fixes */
-@media not all and (min-resolution:.001dpcm) { 
-  @supports (-webkit-appearance:none) {
-    .safari-height-fix {
-      height: 100%;
-      min-height: 100vh;
-      /* Fix for Safari 100vh issue */
-      min-height: -webkit-fill-available;
-    }
-    
-    .safari-flex-fix {
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-    }
-    
-    .safari-backdrop-fix {
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-    }
-  }
-}
-
-/* Enhanced browser compatibility */
-/* Legacy flexbox for older browsers */
-.flex-legacy {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-}
-
-/* Animation performance optimizations */
-.hardware-accelerated {
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  -o-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  -moz-perspective: 1000;
-  -ms-perspective: 1000;
-  perspective: 1000;
-}
-
-/* Error boundaries and fallbacks */
-.error-container {
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 0.5rem;
-  background-color: rgba(254, 226, 226, 0.5);
-  border: 1px solid rgba(248, 113, 113, 0.5);
-}
-
-.error-text {
-  color: rgb(185, 28, 28);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* Cross-browser smooth scrolling */
-.smooth-scroll {
-  scroll-behavior: smooth;
-}
-
-/* Ensure certain elements are untouchable on mobile */
-@media (hover: none) and (pointer: coarse) {
-  .no-touch-action {
-    touch-action: none;
-  }
-}
-
-/* Offline indicator */
-.offline-indicator {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(239, 68, 68, 0.9);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  z-index: 9999;
-  font-size: 0.875rem;
-  font-weight: 500;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* Improve focus styles for accessibility */
-*:focus-visible {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
-}
-
-/* Better accessibility for disabled elements */
-[disabled] {
-  cursor: not-allowed;
-  opacity: 0.6;
 }

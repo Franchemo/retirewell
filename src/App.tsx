@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Suspense, lazy, useEffect, useState } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import NotFound from "./pages/NotFound";
+import React from 'react';
 
 // Lazy load page components for performance optimization
 const Index = lazy(() => import("./pages/Index"));
@@ -31,14 +32,18 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       retry: 2,
       staleTime: 5 * 60 * 1000,
-      onError: (err) => {
-        console.error('Query error:', err);
+      onSettled: (_, err) => {
+        if (err) {
+          console.error('Query error:', err);
+        }
       }
     },
     mutations: {
       retry: 1,
-      onError: (err) => {
-        console.error('Mutation error:', err);
+      onSettled: (_, err) => {
+        if (err) {
+          console.error('Mutation error:', err);
+        }
       }
     }
   },
@@ -133,7 +138,8 @@ const App = () => {
       document.body.classList.add('ios-device');
       
       // Fix for iOS scrolling and touch handling
-      document.documentElement.style.WebkitOverflowScrolling = 'touch';
+      const htmlStyle = document.documentElement.style as any;
+      htmlStyle.WebkitOverflowScrolling = 'touch';
       
       // Fix for iOS vh units
       const fixVh = () => {
@@ -227,17 +233,22 @@ const App = () => {
 };
 
 // Simple Error Boundary Component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, ErrorBoundaryState> {
+  constructor(props: {children: React.ReactNode}) {
     super(props);
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Application error:', error, errorInfo);
   }
 

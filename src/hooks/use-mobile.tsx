@@ -106,7 +106,7 @@ export function useStorageAvailability() {
   });
   
   useEffect(() => {
-    function checkStorage(type) {
+    function checkStorage(type: 'localStorage' | 'sessionStorage') {
       try {
         const storage = window[type];
         const x = '__storage_test__';

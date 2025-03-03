@@ -32,16 +32,17 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       retry: 2,
       staleTime: 5 * 60 * 1000,
-      onSettled: (_, err) => {
-        if (err) {
+      gcTime: 10 * 60 * 1000,
+      meta: {
+        onError: (err: Error) => {
           console.error('Query error:', err);
         }
       }
     },
     mutations: {
       retry: 1,
-      onSettled: (_, err) => {
-        if (err) {
+      meta: {
+        onError: (err: Error) => {
           console.error('Mutation error:', err);
         }
       }

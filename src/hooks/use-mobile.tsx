@@ -108,8 +108,7 @@ export function useStorageAvailability() {
   useEffect(() => {
     function checkStorage(type: 'localStorage' | 'sessionStorage') {
       try {
-        // Fixed: properly access storage through window object
-        const storage = type === 'localStorage' ? window.localStorage : window.sessionStorage;
+        const storage = window[type];
         const x = '__storage_test__';
         storage.setItem(x, x);
         storage.removeItem(x);

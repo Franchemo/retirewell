@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +9,8 @@ import {
   Bot,
   AlertCircle,
   Info,
-  PanelRight,
-  X,
   Trash2,
+  X,
 } from "lucide-react";
 import {
   ChatMessage,
@@ -21,6 +19,7 @@ import {
 } from "@/components/health-assistant/ChatMessage";
 import { SuggestedQuestions } from "@/components/health-assistant/SuggestedQuestions";
 import { useToast } from "@/hooks/use-toast";
+import { getAssistantResponse, getSuggestedQuestions } from "@/services/healthAssistantService";
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -32,70 +31,6 @@ const INITIAL_MESSAGES: Message[] = [
   },
 ];
 
-const SUGGESTED_QUESTIONS = [
-  "How can I improve my sleep quality?",
-  "What are good foods for heart health?",
-  "How much exercise is recommended weekly?",
-  "What can help with stress reduction?",
-  "How can I stay hydrated throughout the day?",
-];
-
-const KNOWLEDGE_BASE: Record<string, string> = {
-  // Sleep
-  "sleep": "For better sleep quality: establish a regular sleep schedule, avoid caffeine and electronics before bedtime, create a comfortable sleep environment, and aim for 7-9 hours of sleep each night.",
-  "insomnia": "Insomnia can be addressed by maintaining regular sleep hours, creating a relaxing bedtime routine, limiting screen time before bed, and trying relaxation techniques like deep breathing or meditation.",
-  
-  // Nutrition
-  "nutrition": "A balanced diet includes a variety of fruits, vegetables, whole grains, lean proteins, and healthy fats. Aim to eat a rainbow of colors to ensure you're getting diverse nutrients.",
-  "hydration": "Proper hydration is essential for health. Most adults should aim for about 2-3 liters (8-10 cups) of water daily, adjusting based on activity level, climate, and individual needs.",
-  "heart health": "Foods that support heart health include those rich in omega-3 fatty acids (like salmon and walnuts), fiber-rich foods (like oats and beans), plenty of fruits and vegetables, and foods low in sodium and saturated fats.",
-  
-  // Exercise
-  "exercise": "The general recommendation is at least 150 minutes of moderate-intensity or 75 minutes of vigorous-intensity aerobic activity per week, plus muscle-strengthening activities at least twice weekly.",
-  "stretching": "Regular stretching improves flexibility, prevents injuries, enhances physical performance, and can reduce stress. Aim to stretch major muscle groups for 30-60 seconds each, at least 2-3 times per week.",
-  
-  // Stress Management
-  "stress": "Effective stress management techniques include regular physical activity, mindfulness meditation, deep breathing exercises, adequate sleep, connecting with others, and setting realistic goals and boundaries.",
-  "meditation": "Meditation can reduce stress, improve focus, and promote emotional well-being. Start with just 5 minutes daily of focused breathing, gradually increasing the duration as it becomes more comfortable.",
-  
-  // General Wellness
-  "immune system": "Support your immune system with a balanced diet rich in fruits and vegetables, regular exercise, adequate sleep, stress management, and staying hydrated. Vitamin C, D, and zinc are particularly important nutrients.",
-  "headache": "Common headache triggers include stress, dehydration, poor posture, eye strain, and certain foods. Management strategies include staying hydrated, practicing stress-relief techniques, and maintaining regular sleep patterns."
-};
-
-// Helper function to simulate AI responses
-const generateResponse = (input: string): string => {
-  input = input.toLowerCase();
-  
-  // Check for emergency-related keywords
-  if (input.includes("emergency") || 
-      input.includes("heart attack") || 
-      input.includes("stroke") || 
-      input.includes("suicide") ||
-      input.includes("dying")) {
-    return "This appears to be an emergency situation. I am not capable of providing emergency assistance. Please call your local emergency number (like 911) immediately, or go to the nearest emergency room.";
-  }
-  
-  // Check for medical diagnosis attempts
-  if (input.includes("do i have") || 
-      input.includes("diagnose") || 
-      input.includes("diagnosis")) {
-    return "I cannot provide medical diagnoses or replace professional medical advice. Please consult with a healthcare professional for proper evaluation of your symptoms and concerns.";
-  }
-  
-  // Search knowledge base for relevant information
-  let response = "I don't have specific information on that topic. For personalized health advice, please consult with a healthcare professional.";
-  
-  for (const keyword in KNOWLEDGE_BASE) {
-    if (input.includes(keyword)) {
-      response = KNOWLEDGE_BASE[keyword];
-      break;
-    }
-  }
-  
-  return response + "\n\nRemember, I provide general information only. For personalized advice, please consult with a healthcare professional.";
-};
-
 const HealthAssistant = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -103,14 +38,27 @@ const HealthAssistant = () => {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to the bottom when messages update
+  useEffect(() => {
+    const fetchSuggestedQuestions = async () => {
+      try {
+        const questions = await getSuggestedQuestions();
+        setSuggestedQuestions(questions);
+      } catch (error) {
+        console.error("Error fetching suggested questions:", error);
+      }
+    };
+
+    fetchSuggestedQuestions();
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: Message = {
@@ -124,18 +72,24 @@ const HealthAssistant = () => {
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate AI processing time
-    setTimeout(() => {
-      const aiResponse: Message = {
+    try {
+      const aiResponse = await getAssistantResponse(userMessage.content);
+      
+      setMessages((prev) => [...prev, aiResponse]);
+    } catch (error) {
+      console.error("Error getting assistant response:", error);
+      
+      const errorMessage: Message = {
         id: uuidv4(),
         type: "assistant",
-        content: generateResponse(userMessage.content),
+        content: "I apologize, but I'm having trouble connecting to the server. Please try again later.",
         timestamp: new Date().toISOString(),
       };
-
-      setMessages((prev) => [...prev, aiResponse]);
+      
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -157,7 +111,6 @@ const HealthAssistant = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-secondary/20 flex flex-col">
-      {/* Top Navigation */}
       <motion.nav
         className="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-white/20"
         initial={{ y: -100 }}
@@ -199,9 +152,7 @@ const HealthAssistant = () => {
         </div>
       </motion.nav>
 
-      {/* Main Content */}
       <div className="flex-1 flex pt-16 pb-20 relative">
-        {/* Chat Messages */}
         <div className="flex-1 overflow-hidden relative">
           <div className="px-4 py-6 h-full overflow-y-auto">
             <div className="max-w-3xl mx-auto space-y-6">
@@ -224,7 +175,6 @@ const HealthAssistant = () => {
           </div>
         </div>
 
-        {/* Info Panel */}
         {showInfo && (
           <motion.div
             initial={{ x: 300, opacity: 0 }}
@@ -317,11 +267,10 @@ const HealthAssistant = () => {
         )}
       </div>
 
-      {/* Input Area (fixed at bottom) */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border p-4">
         <div className="max-w-3xl mx-auto">
           <SuggestedQuestions
-            questions={SUGGESTED_QUESTIONS}
+            questions={suggestedQuestions}
             onSelectQuestion={(question) => setInputValue(question)}
           />
           

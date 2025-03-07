@@ -3,38 +3,36 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { reflectionRoutes } from './routes/reflectionRoutes';
+import bodyParser from 'body-parser';
+
+// Import routes
+import reflectionRoutes from './routes/reflectionRoutes';
+import healthAssistantRoutes from './routes/healthAssistantRoutes';
+
+// Initialize express app
+const app = express();
 
 // Load environment variables
 dotenv.config();
 
-// Create Express server
-const app = express();
-
-// Configure middleware
+// Middleware
 app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Setup MongoDB connection
+// Connect to MongoDB
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/augmend-health';
-
 mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  });
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// API Routes
+// Define API routes
 app.use('/api/v1/reflections', reflectionRoutes);
+app.use('/api/v1/health-assistant', healthAssistantRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
@@ -44,10 +42,7 @@ app.get('/health', (req, res) => {
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 export default app;

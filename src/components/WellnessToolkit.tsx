@@ -5,6 +5,12 @@ import { Circle, Heart, Brain, Shield, Book, MessageCircle } from "lucide-react"
 import { MilestoneCelebration } from "./MilestoneCelebration";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  recordMood, 
+  recordBreathingSession, 
+  getRecentMoods,
+  getBreathingStats
+} from "@/services/wellnessService";
 
 const container = {
   hidden: { opacity: 0 },
@@ -25,6 +31,11 @@ export const WellnessToolkit = () => {
   const [breathCount, setBreathCount] = useState(0);
   const [isBreathing, setIsBreathing] = useState(false);
   const [mood, setMood] = useState<string | null>(null);
+  const [breathingStats, setBreathingStats] = useState({
+    totalSessions: 0,
+    totalMinutes: 0,
+    totalBreaths: 0
+  });
   const { toast } = useToast();
 
   const moodOptions = [
@@ -85,13 +96,79 @@ export const WellnessToolkit = () => {
     }
   ];
 
+  // Load breathing stats on component mount
+  useEffect(() => {
+    const loadBreathingStats = async () => {
+      try {
+        const stats = await getBreathingStats();
+        setBreathingStats(stats);
+      } catch (error) {
+        console.error("Error loading breathing stats:", error);
+      }
+    };
+
+    loadBreathingStats();
+  }, []);
+
+  // Handle mood selection
+  const handleMoodSelect = async (selectedMood: string) => {
+    setMood(selectedMood);
+    
+    try {
+      const success = await recordMood(selectedMood);
+      if (success) {
+        toast({
+          title: "Mood recorded",
+          description: `Your mood has been recorded as ${selectedMood}.`
+        });
+      }
+    } catch (error) {
+      console.error("Error recording mood:", error);
+      toast({
+        title: "Failed to record mood",
+        description: "Please try again later.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle end of breathing session
+  const handleEndBreathingSession = async () => {
+    try {
+      if (breathCount > 0) {
+        const duration = breathCount * 5; // Each breath is 5 seconds
+        const completedBreaths = Math.floor(breathCount / 2); // Each full breath is inhale+exhale
+        
+        const success = await recordBreathingSession(duration, completedBreaths);
+        if (success) {
+          toast({
+            title: "Breathing session complete",
+            description: `You completed ${completedBreaths} breaths in ${duration} seconds.`
+          });
+          
+          // Update stats
+          setBreathingStats(prev => ({
+            totalSessions: prev.totalSessions + 1,
+            totalMinutes: prev.totalMinutes + duration / 60,
+            totalBreaths: prev.totalBreaths + completedBreaths
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error recording breathing session:", error);
+    } finally {
+      setIsBreathing(false);
+      setBreathCount(0);
+    }
+  };
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isBreathing) {
       interval = setInterval(() => {
         setBreathCount(count => {
           if (count >= 10) {
-            setIsBreathing(false);
+            handleEndBreathingSession();
             return 0;
           }
           return count + 1;
@@ -135,7 +212,7 @@ export const WellnessToolkit = () => {
               Breath {Math.floor(breathCount / 2) + 1} of 5
             </p>
             <button
-              onClick={() => setIsBreathing(false)}
+              onClick={handleEndBreathingSession}
               className="mt-6 w-full py-2 px-4 bg-secondary hover:bg-secondary/80 rounded-lg text-foreground transition-colors"
             >
               End Exercise
@@ -150,7 +227,7 @@ export const WellnessToolkit = () => {
           {moodOptions.map((option) => (
             <button
               key={option.label}
-              onClick={() => setMood(option.label)}
+              onClick={() => handleMoodSelect(option.label)}
               className={`flex flex-col items-center p-4 rounded-lg transition-all ${
                 mood === option.label
                   ? "bg-primary/10 border-2 border-primary"
@@ -184,6 +261,27 @@ export const WellnessToolkit = () => {
           ))}
         </div>
       </motion.section>
+
+      {/* Breathing Stats */}
+      {breathingStats.totalSessions > 0 && (
+        <motion.section variants={item} className="p-4 content-card">
+          <h3 className="text-lg font-medium text-foreground mb-3">Breathing Practice Stats</h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-semibold text-primary">{breathingStats.totalSessions}</p>
+              <p className="text-sm text-muted-foreground">Sessions</p>
+            </div>
+            <div>
+              <p className="text-2xl font-semibold text-primary">{Math.round(breathingStats.totalMinutes)}</p>
+              <p className="text-sm text-muted-foreground">Minutes</p>
+            </div>
+            <div>
+              <p className="text-2xl font-semibold text-primary">{breathingStats.totalBreaths}</p>
+              <p className="text-sm text-muted-foreground">Breaths</p>
+            </div>
+          </div>
+        </motion.section>
+      )}
 
       <motion.section variants={item}>
         <MilestoneCelebration />

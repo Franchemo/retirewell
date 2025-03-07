@@ -1,48 +1,61 @@
 
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-
-// Import routes
-import reflectionRoutes from './routes/reflectionRoutes';
-import healthAssistantRoutes from './routes/healthAssistantRoutes';
-
-// Initialize express app
-const app = express();
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import helmet from 'helmet';
 
 // Load environment variables
 dotenv.config();
 
+// Import route handlers
+import reflectionRoutes from './routes/reflectionRoutes';
+import healthAssistantRoutes from './routes/healthAssistantRoutes';
+import contentRoutes from './routes/contentRoutes';
+import wellnessRoutes from './routes/wellnessRoutes';
+
+// Import services that need to be initialized
+import * as contentService from './services/contentService';
+
+// Initialize Express app
+const app = express();
+
 // Middleware
 app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use(express.json());
+app.use(morgan('dev')); // Logging
+app.use(helmet()); // Security
 
-// Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/augmend-health';
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// Define API routes
-app.use('/api/v1/reflections', reflectionRoutes);
-app.use('/api/v1/health-assistant', healthAssistantRoutes);
+// API Routes
+const apiPrefix = '/api/v1';
+app.use(`${apiPrefix}/reflections`, reflectionRoutes);
+app.use(`${apiPrefix}/health-assistant`, healthAssistantRoutes);
+app.use(`${apiPrefix}/content`, contentRoutes);
+app.use(`${apiPrefix}/wellness`, wellnessRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+// Connect to MongoDB and initialize data
+const initializeDatabase = async () => {
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/augmend-health';
+    await mongoose.connect(mongoUri);
+    console.log('Connected to MongoDB successfully');
+    
+    // Seed initial content if needed
+    await contentService.seedInitialContent();
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+  }
+};
+
+// Initialize the database
+initializeDatabase();
 
 export default app;

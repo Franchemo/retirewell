@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Heart, Settings, BookOpen, Award, MessageCircle } from "lucide-react"; 
+import { Heart, Settings, BookOpen, Award, MessageCircle, Activity } from "lucide-react"; 
 import { Link } from "react-router-dom";
 import { BookmarkedContent } from "@/components/BookmarkedContent";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
@@ -22,6 +22,13 @@ const Index = () => {
       icon: BookOpen,
       path: "/reflection-journal",
       color: "bg-primary/10 text-primary"
+    },
+    {
+      title: "Wellness Center",
+      description: "Track your sleep, meditation, and overall wellness journey",
+      icon: Activity,
+      path: "/wellness-center",
+      color: "bg-indigo-500/10 text-indigo-500"
     },
     {
       title: "Achievements",

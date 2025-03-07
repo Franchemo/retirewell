@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ReflectionJournal from "./pages/ReflectionJournal";
 import HealthAssistant from "./pages/HealthAssistant";
+import WellnessCenter from "./pages/WellnessCenter";
 
 // Initialize query client with error handling
 const queryClient = new QueryClient({
@@ -46,6 +47,7 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/reflection-journal" element={<ReflectionJournal />} />
                 <Route path="/health-assistant" element={<HealthAssistant />} />
+                <Route path="/wellness-center" element={<WellnessCenter />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

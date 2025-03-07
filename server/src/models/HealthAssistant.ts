@@ -1,38 +1,38 @@
 
 import mongoose, { Document, Schema } from 'mongoose';
 
-// Define the interface for a health topic
-export interface IHealthTopic extends Document {
-  keyword: string;
-  content: string;
-  category: string;
+// Interface for chat history
+export interface IChatMessage extends Document {
+  userId?: string; // For future authentication
+  userMessage: string;
+  assistantResponse: string;
   createdAt: Date;
-  updatedAt: Date;
 }
 
-// Define the schema for health topics
-const HealthTopicSchema: Schema = new Schema(
-  {
-    keyword: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-      lowercase: true,
-      trim: true
-    },
-    content: {
-      type: String,
-      required: true
-    },
-    category: {
-      type: String,
-      enum: ['sleep', 'nutrition', 'exercise', 'stress', 'general'],
-      default: 'general'
-    }
-  },
-  { timestamps: true }
-);
+// Interface for suggested questions
+export interface ISuggestedQuestion extends Document {
+  question: string;
+  category: string;
+  priority: number;
+  isActive: boolean;
+}
 
-// Create and export the model
-export default mongoose.model<IHealthTopic>('HealthTopic', HealthTopicSchema);
+// Schema for chat history
+const ChatMessageSchema: Schema = new Schema({
+  userId: { type: String },
+  userMessage: { type: String, required: true },
+  assistantResponse: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Schema for suggested questions
+const SuggestedQuestionSchema: Schema = new Schema({
+  question: { type: String, required: true },
+  category: { type: String, default: 'general' },
+  priority: { type: Number, default: 0 },
+  isActive: { type: Boolean, default: true }
+});
+
+// Create models
+export const ChatMessage = mongoose.model<IChatMessage>('ChatMessage', ChatMessageSchema);
+export const SuggestedQuestion = mongoose.model<ISuggestedQuestion>('SuggestedQuestion', SuggestedQuestionSchema);

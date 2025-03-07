@@ -1,16 +1,13 @@
 
 import express from 'express';
-import * as HealthAssistantController from '../controllers/healthAssistantController';
+import * as healthAssistantController from '../controllers/healthAssistantController';
 
 const router = express.Router();
 
-// Initialize knowledge base (admin route)
-router.post('/initialize', HealthAssistantController.initializeKnowledgeBase);
+// Route for chatting with the health assistant
+router.post('/chat', healthAssistantController.chatWithAssistant);
 
-// Get a response from the Health Assistant
-router.post('/chat', HealthAssistantController.getAssistantResponse);
-
-// Get suggested questions
-router.get('/suggested-questions', HealthAssistantController.getSuggestedQuestions);
+// Route for getting suggested questions
+router.get('/suggested-questions', healthAssistantController.getSuggestedQuestions);
 
 export default router;

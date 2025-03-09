@@ -1,61 +1,81 @@
 
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
 import helmet from 'helmet';
-
-// Load environment variables
-dotenv.config();
-
-// Import route handlers
+import morgan from 'morgan';
+import compression from 'compression';
+import { errorHandler } from './middleware/errorHandler';
+import { apiLimiter } from './middleware/rateLimiter';
+import authRoutes from './routes/authRoutes';
 import reflectionRoutes from './routes/reflectionRoutes';
 import healthAssistantRoutes from './routes/healthAssistantRoutes';
 import contentRoutes from './routes/contentRoutes';
 import wellnessRoutes from './routes/wellnessRoutes';
-
-// Import services that need to be initialized
-import * as contentService from './services/contentService';
+import config from './config/config';
+import { logger } from './config/logger';
 
 // Initialize Express app
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(morgan('dev')); // Logging
-app.use(helmet()); // Security
+// Set security HTTP headers
+app.use(helmet());
 
-// API Routes
-const apiPrefix = '/api/v1';
-app.use(`${apiPrefix}/reflections`, reflectionRoutes);
-app.use(`${apiPrefix}/health-assistant`, healthAssistantRoutes);
-app.use(`${apiPrefix}/content`, contentRoutes);
-app.use(`${apiPrefix}/wellness`, wellnessRoutes);
+// CORS configuration
+app.use(cors({
+  origin: config.corsOrigin,
+  credentials: true
+}));
 
-// Health check route
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Server is running' });
+// Body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Compression middleware
+app.use(compression());
+
+// Development logging
+if (config.env === 'development') {
+  app.use(morgan('dev'));
+} else {
+  // Log to Winston in production
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    logger.info(`${req.method} ${req.url}`);
+    next();
+  });
+}
+
+// Rate limiting for API
+app.use('/api', apiLimiter);
+
+// API routes
+const API_PREFIX = '/api/v1';
+
+// Health check endpoint (no rate limiting)
+app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Server is up and running',
+    environment: config.env,
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Connect to MongoDB and initialize data
-const initializeDatabase = async () => {
-  try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/augmend-health';
-    await mongoose.connect(mongoUri);
-    console.log('Connected to MongoDB successfully');
-    
-    // Seed initial content if needed
-    await contentService.seedInitialContent();
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  }
-};
+// API routes with versioning
+app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/reflections`, reflectionRoutes);
+app.use(`${API_PREFIX}/health-assistant`, healthAssistantRoutes);
+app.use(`${API_PREFIX}/content`, contentRoutes);
+app.use(`${API_PREFIX}/wellness`, wellnessRoutes);
 
-// Initialize the database
-initializeDatabase();
+// Handle undefined routes
+app.all('*', (req: Request, res: Response, next: NextFunction) => {
+  res.status(404).json({
+    status: 'error',
+    message: `Can't find ${req.originalUrl} on this server!`
+  });
+});
+
+// Global error handler
+app.use(errorHandler);
 
 export default app;

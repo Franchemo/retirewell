@@ -34,7 +34,7 @@ const Index = () => {
       title: "Achievements",
       description: "Track your health milestones and celebrate progress",
       icon: Award,
-      path: "/", // Currently just shows the milestone component
+      path: "/achievements", // Updated to point to the dedicated page
       color: "bg-attention/10 text-attention"
     },
     {

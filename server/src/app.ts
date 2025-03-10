@@ -1,4 +1,3 @@
-
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -8,7 +7,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import authRoutes from './routes/authRoutes';
 import reflectionRoutes from './routes/reflectionRoutes';
-import healthAssistantRoutes from './routes/healthAssistantRoutes';
+import achievementRoutes from './routes/achievementRoutes';
 import contentRoutes from './routes/contentRoutes';
 import wellnessRoutes from './routes/wellnessRoutes';
 import config from './config/config';
@@ -60,7 +59,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes with versioning
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/reflections`, reflectionRoutes);
-app.use(`${API_PREFIX}/health-assistant`, healthAssistantRoutes);
+app.use(`${API_PREFIX}/achievements`, achievementRoutes);
 app.use(`${API_PREFIX}/content`, contentRoutes);
 app.use(`${API_PREFIX}/wellness`, wellnessRoutes);
 

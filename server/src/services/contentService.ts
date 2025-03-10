@@ -1,111 +1,91 @@
 
-import Content, { IContent } from '../models/Content';
+import ContentRepository from '../repositories/ContentRepository';
+import UserContentRepository from '../repositories/UserContentRepository';
+import { IContent } from '../models/Content';
+import { IUserContent } from '../models/UserContent';
 
-export const getAllContent = async (): Promise<IContent[]> => {
-  try {
-    return await Content.find().sort({ createdAt: -1 });
-  } catch (error) {
-    throw new Error(`Error fetching content: ${error}`);
+class ContentService {
+  async getAllContent(filters?: any): Promise<IContent[]> {
+    return ContentRepository.getAllContent(filters);
   }
-};
 
-export const getContentById = async (id: string): Promise<IContent | null> => {
-  try {
-    return await Content.findOne({ id });
-  } catch (error) {
-    throw new Error(`Error fetching content by ID: ${error}`);
+  async getContentById(id: string): Promise<IContent | null> {
+    return ContentRepository.getContentById(id);
   }
-};
 
-export const getContentByCategory = async (category: string): Promise<IContent[]> => {
-  try {
-    if (category.toLowerCase() === 'all') {
-      return await Content.find().sort({ createdAt: -1 });
-    }
-    return await Content.find({ 
-      type: category.toLowerCase() 
-    }).sort({ createdAt: -1 });
-  } catch (error) {
-    throw new Error(`Error fetching content by category: ${error}`);
+  async getContentByCategory(category: string): Promise<IContent[]> {
+    return ContentRepository.getContentByCategory(category);
   }
-};
 
-export const toggleBookmark = async (id: string): Promise<IContent | null> => {
-  try {
-    const content = await Content.findOne({ id });
-    if (!content) return null;
+  async getContentByType(type: string): Promise<IContent[]> {
+    return ContentRepository.getContentByType(type);
+  }
+
+  async searchContent(query: string): Promise<IContent[]> {
+    return ContentRepository.searchContent(query);
+  }
+
+  async createContent(data: Partial<IContent>): Promise<IContent> {
+    return ContentRepository.createContent(data);
+  }
+
+  async updateContent(id: string, data: Partial<IContent>): Promise<IContent | null> {
+    return ContentRepository.updateContent(id, data);
+  }
+
+  async deleteContent(id: string): Promise<boolean> {
+    return ContentRepository.deleteContent(id);
+  }
+
+  async getUserContent(userId: string, filters?: any): Promise<IUserContent[]> {
+    return UserContentRepository.getUserContent(userId, filters);
+  }
+
+  async updateUserProgress(userId: string, contentId: string, progress: number): Promise<IUserContent | null> {
+    return UserContentRepository.updateUserProgress(userId, contentId, progress);
+  }
+
+  async toggleBookmark(userId: string, contentId: string): Promise<IUserContent | null> {
+    return UserContentRepository.toggleBookmark(userId, contentId);
+  }
+
+  async getUserBookmarks(userId: string): Promise<IUserContent[]> {
+    return UserContentRepository.getUserBookmarks(userId);
+  }
+
+  async getRecentContent(userId: string, limit: number = 5): Promise<IUserContent[]> {
+    return UserContentRepository.getRecentContent(userId, limit);
+  }
+
+  async getRecommendedContent(userId: string): Promise<any[]> {
+    return UserContentRepository.getRecommendedContent(userId);
+  }
+
+  async getContentCategories(): Promise<string[]> {
+    const contents = await ContentRepository.getAllContent();
+    const categories = new Set<string>();
     
-    content.isBookmarked = !content.isBookmarked;
-    return await content.save();
-  } catch (error) {
-    throw new Error(`Error toggling bookmark: ${error}`);
-  }
-};
-
-export const updateProgress = async (id: string, progress: number): Promise<IContent | null> => {
-  try {
-    const content = await Content.findOne({ id });
-    if (!content) return null;
+    contents.forEach(content => {
+      if (content.category) {
+        content.category.forEach(cat => categories.add(cat));
+      }
+    });
     
-    content.progress = progress;
-    return await content.save();
-  } catch (error) {
-    throw new Error(`Error updating progress: ${error}`);
+    return Array.from(categories).sort();
   }
-};
 
-// Function to seed initial content if none exists
-export const seedInitialContent = async (): Promise<void> => {
-  try {
-    const count = await Content.countDocuments();
-    if (count === 0) {
-      const initialContent = [
-        {
-          id: "1",
-          title: "Understanding Anxiety",
-          description: "Learn about the root causes of anxiety and effective coping mechanisms.",
-          type: "article",
-          duration: "10 min read",
-          difficulty: "Beginner",
-          progress: 0,
-          isBookmarked: false
-        },
-        {
-          id: "2",
-          title: "Guided Meditation",
-          description: "A calming meditation session for stress relief.",
-          type: "audio",
-          duration: "15 min",
-          difficulty: "Beginner",
-          progress: 0,
-          isBookmarked: false
-        },
-        {
-          id: "3",
-          title: "Cognitive Behavioral Exercises",
-          description: "Interactive exercises to challenge negative thought patterns.",
-          type: "exercise",
-          duration: "20 min",
-          difficulty: "Intermediate",
-          progress: 0,
-          isBookmarked: false
-        },
-        {
-          id: "4",
-          title: "Stress Management Techniques",
-          description: "Video demonstration of effective stress management techniques.",
-          type: "video",
-          duration: "12 min",
-          difficulty: "Beginner",
-          progress: 0,
-          isBookmarked: false
-        }
-      ];
-      
-      await Content.insertMany(initialContent);
-      console.log('Initial content seeded successfully');
-    }
-  } catch (error) {
-    console.error('Error seeding initial content:', error);
+  async getContentTypes(): Promise<string[]> {
+    const contents = await ContentRepository.getAllContent();
+    const types = new Set<string>();
+    
+    contents.forEach(content => {
+      if (content.type) {
+        types.add(content.type);
+      }
+    });
+    
+    return Array.from(types).sort();
   }
-};
+}
+
+export default new ContentService();

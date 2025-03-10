@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
-import { Book, Heart } from "lucide-react";
+import { Book, Heart, Clock, BarChart } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 export interface ContentItem {
   id: string;
@@ -16,9 +17,31 @@ export interface ContentItem {
 interface ContentCardProps {
   content: ContentItem;
   onBookmark: (id: string) => void;
+  onOpen?: (id: string) => void;
 }
 
-export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
+export const ContentCard = ({ content, onBookmark, onOpen }: ContentCardProps) => {
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "article":
+        return <Book className="w-4 h-4 mr-1" />;
+      case "video":
+        return <BarChart className="w-4 h-4 mr-1" />;
+      case "audio":
+        return <BarChart className="w-4 h-4 mr-1" />;
+      case "exercise":
+        return <BarChart className="w-4 h-4 mr-1" />;
+      default:
+        return <Book className="w-4 h-4 mr-1" />;
+    }
+  };
+
+  const handleOpen = () => {
+    if (onOpen) {
+      onOpen(content.id);
+    }
+  };
+
   return (
     <motion.div
       className="content-card"
@@ -33,7 +56,8 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
           
           <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
             <span className="flex items-center">
-              <Book className="w-4 h-4 mr-1" />
+              {getTypeIcon(content.type)}
+              <Clock className="w-4 h-4 ml-2 mr-1" />
               {content.duration}
             </span>
             <span className="px-3 py-1 rounded-full frosted-glass text-xs font-medium">
@@ -47,14 +71,7 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
                 <span className="text-muted-foreground">Progress</span>
                 <span className="text-primary font-medium">{content.progress}%</span>
               </div>
-              <div className="h-2 bg-secondary/50 rounded-full overflow-hidden backdrop-blur-sm">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-primary to-primary/80"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${content.progress}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
+              <Progress value={content.progress} className="h-2" />
             </div>
           )}
         </div>
@@ -67,7 +84,7 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
               : "frosted-glass text-muted-foreground hover:text-foreground hover:shadow-lg"
           }`}
         >
-          <Heart className="w-5 h-5" />
+          <Heart className={`w-5 h-5 ${content.isBookmarked ? "fill-current" : ""}`} />
         </button>
       </div>
 
@@ -75,6 +92,7 @@ export const ContentCard = ({ content, onBookmark }: ContentCardProps) => {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className="button-primary mt-4 w-full"
+        onClick={handleOpen}
       >
         {content.progress ? "Continue" : "Start"} {content.type}
       </motion.button>

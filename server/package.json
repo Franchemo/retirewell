@@ -1,4 +1,3 @@
-
 {
   "name": "augmend-health-server",
   "version": "1.0.0",
@@ -10,7 +9,8 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed:achievements": "ts-node src/scripts/seedAchievements.ts",
-    "seed:questions": "ts-node src/scripts/seedSuggestedQuestions.ts"
+    "seed:questions": "ts-node src/scripts/seedSuggestedQuestions.ts",
+    "seed:content": "ts-node src/scripts/seedContent.ts"
   },
   "dependencies": {
     "body-parser": "^1.20.3",

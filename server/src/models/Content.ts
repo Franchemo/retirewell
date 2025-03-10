@@ -2,36 +2,42 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IContent extends Document {
-  id: string;
   title: string;
   description: string;
-  type: 'article' | 'audio' | 'video' | 'exercise';
-  duration: string;
+  type: 'article' | 'video' | 'exercise' | 'audio';
+  category: string[];
+  tags: string[];
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  progress: number;
-  isBookmarked: boolean;
+  duration: number;
+  thumbnailUrl: string;
+  contentUrl: string;
+  contentBody: string;
   createdAt: Date;
   updatedAt: Date;
+  isPublished: boolean;
 }
 
 const ContentSchema: Schema = new Schema(
   {
-    id: { type: String, required: true, unique: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     type: { 
       type: String, 
       required: true,
-      enum: ['article', 'audio', 'video', 'exercise'] 
+      enum: ['article', 'video', 'exercise', 'audio'] 
     },
-    duration: { type: String, required: true },
+    category: [{ type: String }],
+    tags: [{ type: String }],
     difficulty: { 
       type: String, 
       required: true,
       enum: ['Beginner', 'Intermediate', 'Advanced']
     },
-    progress: { type: Number, default: 0 },
-    isBookmarked: { type: Boolean, default: false }
+    duration: { type: Number, required: true },
+    thumbnailUrl: { type: String },
+    contentUrl: { type: String },
+    contentBody: { type: String },
+    isPublished: { type: Boolean, default: true }
   },
   { timestamps: true }
 );

@@ -4,8 +4,14 @@ import { useState, useEffect } from "react";
 import { SearchBar } from "./content/SearchBar";
 import { CategoryFilter } from "./content/CategoryFilter";
 import { ContentCard, ContentItem } from "./content/ContentCard";
-import { fetchContent, toggleBookmark } from "@/services/contentService";
+import { 
+  fetchContent, 
+  fetchContentByType, 
+  toggleBookmark, 
+  searchContent 
+} from "@/services/contentService";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 const container = {
   hidden: { opacity: 0 },
@@ -26,39 +32,39 @@ export const ContentLibrary = () => {
   const [activeCategory, setActiveCategory] = useState<ContentCategory>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   const categories: ContentCategory[] = ["All", "Exercises", "Articles", "Videos", "Audio"];
 
-  useEffect(() => {
-    const loadContent = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchContent();
-        setContentItems(data);
-      } catch (error) {
-        console.error("Error loading content:", error);
-        toast({
-          title: "Failed to load content",
-          description: "Please try again later.",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Convert from plural category to singular for API calls
+  const getCategoryType = (category: ContentCategory): string => {
+    if (category === "All") return "all";
+    return category.slice(0, -1).toLowerCase();
+  };
 
-    loadContent();
-  }, [toast]);
-
-  const filteredContent = contentItems.filter(item => {
-    const matchesCategory = activeCategory === "All" || 
-                           item.type.toLowerCase() === activeCategory.toLowerCase().slice(0, -1);
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+  // Use React Query for data fetching
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['content', activeCategory],
+    queryFn: () => 
+      activeCategory === "All" 
+        ? fetchContent() 
+        : fetchContentByType(getCategoryType(activeCategory))
   });
+
+  // Handle search
+  const { data: searchResults, isLoading: isSearching } = useQuery({
+    queryKey: ['contentSearch', searchQuery],
+    queryFn: () => searchContent(searchQuery),
+    enabled: searchQuery.length > 0
+  });
+
+  useEffect(() => {
+    if (searchQuery && searchResults) {
+      setContentItems(searchResults);
+    } else if (!searchQuery && data) {
+      setContentItems(data);
+    }
+  }, [data, searchResults, searchQuery]);
 
   const handleToggleBookmark = async (id: string) => {
     try {
@@ -85,6 +91,17 @@ export const ContentLibrary = () => {
     }
   };
 
+  const handleContentOpen = (id: string) => {
+    // This would navigate to content detail page in a real implementation
+    console.log(`Opening content with id: ${id}`);
+    toast({
+      title: "Opening content",
+      description: "Content detail view would open here."
+    });
+  };
+
+  const isLoaded = !isLoading && !isSearching;
+
   return (
     <motion.div
       variants={container}
@@ -100,26 +117,33 @@ export const ContentLibrary = () => {
         categories={categories}
       />
 
-      {isLoading ? (
+      {!isLoaded ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
       ) : (
         <>
+          {error && (
+            <motion.div variants={item} className="text-center py-8 text-red-500">
+              Error loading content. Please try again later.
+            </motion.div>
+          )}
+
           <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredContent.map((content) => (
+            {contentItems.map((content) => (
               <ContentCard
                 key={content.id}
                 content={content}
                 onBookmark={handleToggleBookmark}
+                onOpen={handleContentOpen}
               />
             ))}
           </motion.div>
 
-          {filteredContent.length === 0 && (
+          {contentItems.length === 0 && !error && (
             <motion.div
               variants={item}
-              className="text-center py-12 text-gray-500"
+              className="text-center py-12 text-muted-foreground"
             >
               No content found matching your criteria
             </motion.div>

@@ -1,22 +1,29 @@
 
-import express from 'express';
-import * as contentController from '../controllers/contentController';
+import { Router } from 'express';
+import ContentController from '../controllers/contentController';
+import authMiddleware from '../middleware/authMiddleware';
 
-const router = express.Router();
+const router = Router();
 
-// Get all content
-router.get('/', contentController.getAllContent);
+// Public routes
+router.get('/', ContentController.getAllContent);
+router.get('/categories', ContentController.getContentCategories);
+router.get('/types', ContentController.getContentTypes);
+router.get('/:id', ContentController.getContentById);
+router.get('/category/:category', ContentController.getContentByCategory);
+router.get('/type/:type', ContentController.getContentByType);
 
-// Get content by ID
-router.get('/:id', contentController.getContentById);
+// Protected routes requiring authentication
+router.post('/', authMiddleware, ContentController.createContent);
+router.put('/:id', authMiddleware, ContentController.updateContent);
+router.delete('/:id', authMiddleware, ContentController.deleteContent);
 
-// Get content by category
-router.get('/category/:category', contentController.getContentByCategory);
-
-// Toggle bookmark status
-router.put('/:id/bookmark', contentController.toggleBookmark);
-
-// Update progress
-router.put('/:id/progress', contentController.updateProgress);
+// User content routes
+router.get('/users/:userId/content', authMiddleware, ContentController.getUserContent);
+router.put('/users/:userId/content/:contentId/progress', authMiddleware, ContentController.updateUserProgress);
+router.post('/users/:userId/content/:contentId/bookmark', authMiddleware, ContentController.toggleBookmark);
+router.get('/users/:userId/bookmarks', authMiddleware, ContentController.getUserBookmarks);
+router.get('/users/:userId/recent', authMiddleware, ContentController.getRecentContent);
+router.get('/users/:userId/recommendations', authMiddleware, ContentController.getRecommendedContent);
 
 export default router;

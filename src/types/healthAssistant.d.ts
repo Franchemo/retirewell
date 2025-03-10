@@ -1,13 +1,25 @@
 
-export interface ChatMessage {
-  message: string;
-}
-
-export interface ChatResponse {
-  response: string;
+export interface Message {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
   timestamp: string;
 }
 
-export interface SuggestedQuestionsResponse {
-  questions: string[];
+export interface Conversation {
+  id: string;
+  messages: Message[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SuggestedQuestion {
+  id: string;
+  text: string;
+  category: string;
+}
+
+export interface HealthAssistantResponse {
+  response: string;
+  timestamp: string;
 }

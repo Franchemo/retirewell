@@ -1,41 +1,36 @@
 
 import { Request, Response } from 'express';
-import * as healthAssistantService from '../services/healthAssistantService';
+import HealthAssistantService from '../services/HealthAssistantService';
 
-export const chatWithAssistant = async (req: Request, res: Response) => {
-  try {
-    const { message } = req.body;
-    
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
+export class HealthAssistantController {
+  async processMessage(req: Request, res: Response): Promise<void> {
+    try {
+      const { message } = req.body;
+      
+      if (!message) {
+        res.status(400).json({ error: 'Message is required' });
+        return;
+      }
+      
+      // Using a temporary user ID until auth is fully implemented
+      const userId = req.user?.id || '6523c1f3a85543abcd123456';
+      
+      const response = await HealthAssistantService.processUserMessage(userId, message);
+      
+      res.status(200).json(response);
+    } catch (error) {
+      console.error('Error processing message:', error);
+      res.status(500).json({ error: 'Failed to process message' });
     }
-    
-    // Generate a response to the user's message
-    const response = await healthAssistantService.generateResponse(message);
-    
-    // Save the conversation in the database (optional)
-    await healthAssistantService.saveChat(message, response);
-    
-    // Return the response to the client
-    return res.status(200).json({
-      response,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Error in health assistant chat:', error);
-    return res.status(500).json({ error: 'Failed to process request' });
   }
-};
-
-export const getSuggestedQuestions = async (_req: Request, res: Response) => {
-  try {
-    const questions = await healthAssistantService.getSuggestedQuestions();
-    
-    return res.status(200).json({
-      questions
-    });
-  } catch (error) {
-    console.error('Error getting suggested questions:', error);
-    return res.status(500).json({ error: 'Failed to fetch suggested questions' });
+  
+  async getSuggestedQuestions(req: Request, res: Response): Promise<void> {
+    try {
+      const questions = await HealthAssistantService.getSuggestedQuestions();
+      res.status(200).json({ questions });
+    } catch (error) {
+      console.error('Error getting suggested questions:', error);
+      res.status(500).json({ error: 'Failed to get suggested questions' });
+    }
   }
-};
+}

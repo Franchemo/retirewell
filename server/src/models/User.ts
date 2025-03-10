@@ -1,88 +1,94 @@
 
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import config from '../config/config';
 
-export interface UserInput {
-  name: string;
+export interface IUser extends Document {
   email: string;
   password: string;
-  role?: string;
-}
-
-export interface UserDocument extends Document, UserInput {
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  preferences: {
+    theme: 'light' | 'dark' | 'system';
+    fontSize: 'small' | 'medium' | 'large';
+    notifications: boolean;
+    emailDigest: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  generateAuthToken(): string;
 }
 
-const userSchema = new Schema<UserDocument>(
+const UserSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: [true, 'Please provide a name'],
-      trim: true,
-      maxlength: [50, 'Name cannot be more than 50 characters']
-    },
     email: {
       type: String,
-      required: [true, 'Please provide an email'],
+      required: true,
       unique: true,
-      match: [
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        'Please provide a valid email'
-      ],
+      trim: true,
       lowercase: true,
-      trim: true
     },
     password: {
       type: String,
-      required: [true, 'Please provide a password'],
-      minlength: [6, 'Password must be at least 6 characters'],
-      select: false // Don't include password in query results by default
+      required: true,
+      minlength: 8,
     },
-    role: {
+    firstName: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user'
-    }
+      required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    profilePicture: {
+      type: String,
+    },
+    preferences: {
+      theme: {
+        type: String,
+        enum: ['light', 'dark', 'system'],
+        default: 'system',
+      },
+      fontSize: {
+        type: String,
+        enum: ['small', 'medium', 'large'],
+        default: 'medium',
+      },
+      notifications: {
+        type: Boolean,
+        default: true,
+      },
+      emailDigest: {
+        type: Boolean,
+        default: true,
+      },
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-// Index for faster queries
-userSchema.index({ email: 1 });
-
 // Hash password before saving
-userSchema.pre('save', async function (next) {
-  // Only hash the password if it's modified (or new)
-  if (!this.isModified('password')) return next();
+UserSchema.pre('save', async function (next) {
+  const user = this;
+  if (!user.isModified('password')) return next();
 
   try {
     const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    user.password = await bcrypt.hash(user.password, salt);
     next();
-  } catch (error: any) {
-    next(error);
+  } catch (error) {
+    return next(error as Error);
   }
 });
 
-// Method to compare password
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
+// Method to compare passwords
+UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Method to generate JWT token
-userSchema.methods.generateAuthToken = function (): string {
-  return jwt.sign({ id: this._id }, config.jwtSecret, {
-    expiresIn: config.jwtExpiresIn
-  });
-};
-
-export const User = mongoose.model<UserDocument>('User', userSchema);
+export default mongoose.model<IUser>('User', UserSchema);

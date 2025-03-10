@@ -1,28 +1,37 @@
 
 import express from 'express';
-import {
-  getAllReflections,
-  getReflectionById,
-  createReflection,
-  updateReflection,
-  deleteReflection
-} from '../controllers/reflectionController';
+import ReflectionController from '../controllers/ReflectionController';
+import { authenticate } from '../middleware/authMiddleware';
+import { rateLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
+const controller = new ReflectionController();
 
-// GET all reflections
-router.get('/', getAllReflections);
+// Apply authentication middleware to all routes
+router.use(authenticate);
 
-// GET a single reflection by ID
-router.get('/:id', getReflectionById);
+// Apply a specific rate limiter for this resource
+const reflectionLimiter = rateLimiter(100, 15 * 60); // 100 requests per 15 minutes
 
-// POST a new reflection
-router.post('/', createReflection);
+// Get all reflections with filtering options
+router.get('/', reflectionLimiter, controller.getReflections);
 
-// PUT/update a reflection
-router.put('/:id', updateReflection);
+// Get reflection streaks
+router.get('/streaks', reflectionLimiter, controller.getStreaks);
 
-// DELETE a reflection
-router.delete('/:id', deleteReflection);
+// Get mood statistics
+router.get('/mood-stats', reflectionLimiter, controller.getMoodStats);
 
-export { router as reflectionRoutes };
+// Get a specific reflection by ID
+router.get('/:id', reflectionLimiter, controller.getReflectionById);
+
+// Create a new reflection
+router.post('/', reflectionLimiter, controller.createReflection);
+
+// Update a reflection
+router.put('/:id', reflectionLimiter, controller.updateReflection);
+
+// Delete a reflection
+router.delete('/:id', reflectionLimiter, controller.deleteReflection);
+
+export default router;

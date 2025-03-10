@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import compression from 'compression';
+import bodyParser from 'body-parser';
 import { errorHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import authRoutes from './routes/authRoutes';
@@ -27,11 +27,8 @@ app.use(cors({
 }));
 
 // Body parser, reading data from body into req.body
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-
-// Compression middleware
-app.use(compression());
+app.use(bodyParser.json({ limit: '10kb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10kb' }));
 
 // Development logging
 if (config.env === 'development') {

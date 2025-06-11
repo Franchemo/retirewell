@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, type ReactNode } from "react";
 
 type ThemeType = "default" | "dark" | "high-contrast" | "purple" | "green";
 type FontSizeType = "small" | "medium" | "large" | "xlarge";
@@ -31,78 +31,108 @@ const defaultValues: ThemeContextType = {
 
 export const ThemeContext = createContext<ThemeContextType>(defaultValues);
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+};
 
 interface ThemeProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Initialize state from localStorage or defaults
   const [theme, setThemeState] = useState<ThemeType>(() => {
-    const savedTheme = localStorage.getItem("theme") as ThemeType;
-    return savedTheme || "default";
+    try {
+      const savedTheme = localStorage.getItem("theme") as ThemeType;
+      return savedTheme || "default";
+    } catch {
+      return "default";
+    }
   });
   
   const [fontSize, setFontSizeState] = useState<FontSizeType>(() => {
-    const savedFontSize = localStorage.getItem("fontSize") as FontSizeType;
-    return savedFontSize || "medium";
+    try {
+      const savedFontSize = localStorage.getItem("fontSize") as FontSizeType;
+      return savedFontSize || "medium";
+    } catch {
+      return "medium";
+    }
   });
   
   const [density, setDensityState] = useState<DensityType>(() => {
-    const savedDensity = localStorage.getItem("density") as DensityType;
-    return savedDensity || "default";
+    try {
+      const savedDensity = localStorage.getItem("density") as DensityType;
+      return savedDensity || "default";
+    } catch {
+      return "default";
+    }
   });
   
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
 
   // Apply theme to document
   useEffect(() => {
-    // Remove all theme classes
-    document.documentElement.classList.remove(
-      "theme-dark", 
-      "theme-high-contrast", 
-      "theme-purple", 
-      "theme-green"
-    );
-    
-    // Add the current theme class (except for default which doesn't need a class)
-    if (theme !== "default") {
-      document.documentElement.classList.add(`theme-${theme}`);
+    try {
+      // Remove all theme classes
+      document.documentElement.classList.remove(
+        "theme-dark", 
+        "theme-high-contrast", 
+        "theme-purple", 
+        "theme-green"
+      );
+      
+      // Add the current theme class (except for default which doesn't need a class)
+      if (theme !== "default") {
+        document.documentElement.classList.add(`theme-${theme}`);
+      }
+      
+      localStorage.setItem("theme", theme);
+    } catch (error) {
+      console.warn("Error applying theme:", error);
     }
-    
-    localStorage.setItem("theme", theme);
   }, [theme]);
 
   // Apply font size to document
   useEffect(() => {
-    // Remove all font size classes
-    document.documentElement.classList.remove(
-      "text-size-small",
-      "text-size-medium",
-      "text-size-large",
-      "text-size-xlarge"
-    );
-    
-    // Add the current font size class
-    document.documentElement.classList.add(`text-size-${fontSize}`);
-    
-    localStorage.setItem("fontSize", fontSize);
+    try {
+      // Remove all font size classes
+      document.documentElement.classList.remove(
+        "text-size-small",
+        "text-size-medium",
+        "text-size-large",
+        "text-size-xlarge"
+      );
+      
+      // Add the current font size class
+      document.documentElement.classList.add(`text-size-${fontSize}`);
+      
+      localStorage.setItem("fontSize", fontSize);
+    } catch (error) {
+      console.warn("Error applying font size:", error);
+    }
   }, [fontSize]);
 
   // Apply density to document
   useEffect(() => {
-    // Remove all density classes
-    document.documentElement.classList.remove(
-      "density-compact",
-      "density-default",
-      "density-spacious"
-    );
-    
-    // Add the current density class
-    document.documentElement.classList.add(`density-${density}`);
-    
-    localStorage.setItem("density", density);
+    try {
+      // Remove all density classes
+      document.documentElement.classList.remove(
+        "density-compact",
+        "density-default",
+        "density-spacious"
+      );
+      
+      // Add the current density class
+      document.documentElement.classList.add(`density-${density}`);
+      
+      localStorage.setItem("density", density);
+    } catch (error) {
+      console.warn("Error applying density:", error);
+    }
   }, [density]);
 
   // Setter functions

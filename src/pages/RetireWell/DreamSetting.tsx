@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Plus, Trash2, ArrowRight, Sparkles } from "lucide-react";
 import Navigation from "@/components/RetireWell/Navigation";
@@ -18,6 +19,7 @@ interface Dream {
   estimatedCost: number;
   timeframe: string;
   category?: string;
+  personalReason?: string;
 }
 
 // Predefined dream options as per document
@@ -99,7 +101,8 @@ const DreamSetting = () => {
         description: predefinedDream.description,
         estimatedCost: 50000,
         timeframe: "5-10 years",
-        category: predefinedDream.category
+        category: predefinedDream.category,
+        personalReason: ""
       };
       setSelectedDreams(prev => [...prev, predefinedDream.title]);
       setDreams(prev => [...prev, dream]);
@@ -119,7 +122,8 @@ const DreamSetting = () => {
         description: newDream.description,
         estimatedCost: parseFloat(newDream.estimatedCost) || 0,
         timeframe: newDream.timeframe,
-        category: "Custom"
+        category: "Custom",
+        personalReason: ""
       };
       setDreams(prev => [...prev, dream]);
       setNewDream({ title: "", description: "", estimatedCost: "", timeframe: "" });
@@ -138,6 +142,14 @@ const DreamSetting = () => {
       setDreams(dreams.filter(dream => dream.id !== id));
       setSelectedDreams(prev => prev.filter(title => title !== dreamToRemove.title));
     }
+  };
+
+  const updateDreamReason = (dreamId: string, reason: string) => {
+    setDreams(prev => prev.map(dream => 
+      dream.id === dreamId 
+        ? { ...dream, personalReason: reason }
+        : dream
+    ));
   };
 
   const handleContinue = () => {
@@ -176,11 +188,11 @@ const DreamSetting = () => {
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Heart className="w-8 h-8 text-financial-secure" />
             <h1 className="text-3xl font-bold text-financial-gradient">
-              Set Your Retirement Dreams
+              What Are Your Retirement Dreams?
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Choose what matters most to you in retirement
+          <p className="text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto">
+            Before we talk numbers, let's explore what truly matters to you. Select the dreams that resonate with your vision of retirement and tell us why they're important.
           </p>
         </motion.div>
 
@@ -207,7 +219,6 @@ const DreamSetting = () => {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <h2 className="text-xl font-semibold mb-4">Choose Your Dreams</h2>
           <div className="grid grid-cols-1 gap-3">
             {PREDEFINED_DREAMS.map((dream, index) => {
               const isSelected = selectedDreams.includes(dream.title);
@@ -345,15 +356,20 @@ const DreamSetting = () => {
           </motion.div>
         )}
 
-        {/* Selected Dreams Summary */}
+        {/* Tell Us Why These Dreams Matter Section */}
         {dreams.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-24"
+            className="mb-32"
           >
-            <h3 className="text-lg font-semibold mb-4">Your Selected Dreams</h3>
-            <div className="space-y-3">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-semibold text-financial-secure bg-white/80 px-4 py-2 rounded-lg inline-block">
+                Tell Us Why These Dreams Matter to You
+              </h2>
+            </div>
+            
+            <div className="space-y-4">
               {dreams.map((dream, index) => (
                 <motion.div
                   key={dream.id}
@@ -363,30 +379,28 @@ const DreamSetting = () => {
                 >
                   <Card className="financial-card">
                     <CardContent className="pt-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-financial-secure mb-1">
-                            {dream.title}
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-2">{dream.description}</p>
-                          <div className="flex justify-between text-xs">
-                            <span className="text-success-gradient font-medium">
-                              ${dream.estimatedCost.toLocaleString()}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {dream.timeframe}
-                            </span>
-                          </div>
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="text-xl">
+                          {PREDEFINED_DREAMS.find(pd => pd.title === dream.title)?.icon || "🎯"}
                         </div>
+                        <h4 className="font-semibold text-financial-secure">
+                          {dream.title}
+                        </h4>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => removeDream(dream.id)}
-                          className="text-destructive hover:text-destructive ml-2"
+                          className="text-destructive hover:text-destructive ml-auto"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
+                      <Textarea
+                        placeholder={`What makes "${dream.title}" meaningful to you? Share your personal motivation...`}
+                        value={dream.personalReason || ""}
+                        onChange={(e) => updateDreamReason(dream.id, e.target.value)}
+                        className="min-h-[80px] resize-none"
+                      />
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -407,20 +421,22 @@ const DreamSetting = () => {
           </motion.div>
         )}
 
-        {/* Fixed Continue Button */}
+        {/* Fixed Continue Button - Centered */}
         {dreams.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4"
+            className="fixed bottom-20 left-0 right-0 px-4"
           >
-            <Button 
-              onClick={handleContinue}
-              className="w-full button-financial text-lg py-4"
-            >
-              Continue to Goals Setup
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
+            <div className="max-w-md mx-auto">
+              <Button 
+                onClick={handleContinue}
+                className="w-full button-financial text-lg py-4"
+              >
+                Continue to Goals Setup
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </div>
           </motion.div>
         )}
       </div>

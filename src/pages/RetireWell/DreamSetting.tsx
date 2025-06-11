@@ -1,12 +1,15 @@
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Plus, Trash2 } from "lucide-react";
+import { Heart, Plus, Trash2, ArrowRight } from "lucide-react";
 import Navigation from "@/components/RetireWell/Navigation";
+import { useRetireWell } from "@/contexts/RetireWellContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface Dream {
   id: string;
@@ -25,6 +28,35 @@ const DreamSetting = () => {
     timeframe: "",
   });
 
+  const { userProgress, updateProgress, getNextStep } = useRetireWell();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Load dreams from localStorage on mount
+  useEffect(() => {
+    const savedDreams = localStorage.getItem('retirewell-dreams');
+    if (savedDreams) {
+      const dreamsList = JSON.parse(savedDreams);
+      setDreams(dreamsList);
+      // Update progress based on existing dreams
+      updateProgress({
+        hasCompletedDreams: dreamsList.length > 0,
+        dreamsCount: dreamsList.length,
+        currentStep: dreamsList.length > 0 ? 'onboarding' : 'dreams'
+      });
+    }
+  }, [updateProgress]);
+
+  // Save dreams to localStorage whenever dreams change
+  useEffect(() => {
+    localStorage.setItem('retirewell-dreams', JSON.stringify(dreams));
+    updateProgress({
+      hasCompletedDreams: dreams.length > 0,
+      dreamsCount: dreams.length,
+      currentStep: dreams.length > 0 ? 'onboarding' : 'dreams'
+    });
+  }, [dreams, updateProgress]);
+
   const addDream = () => {
     if (newDream.title.trim()) {
       const dream: Dream = {
@@ -36,11 +68,30 @@ const DreamSetting = () => {
       };
       setDreams([...dreams, dream]);
       setNewDream({ title: "", description: "", estimatedCost: "", timeframe: "" });
+      
+      // Show success message
+      toast({
+        title: "Dream added!",
+        description: `"${dream.title}" has been added to your retirement dreams.`,
+      });
     }
   };
 
   const removeDream = (id: string) => {
     setDreams(dreams.filter(dream => dream.id !== id));
+  };
+
+  const handleContinue = () => {
+    if (dreams.length === 0) {
+      toast({
+        title: "Add at least one dream",
+        description: "Please add at least one retirement dream before continuing.",
+      });
+      return;
+    }
+    
+    const nextStep = getNextStep();
+    navigate(nextStep);
   };
 
   return (
@@ -62,6 +113,22 @@ const DreamSetting = () => {
             Define your retirement dreams and give them shape
           </p>
         </motion.div>
+
+        {/* Progress indicator */}
+        {dreams.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 text-center"
+          >
+            <div className="inline-flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-2 rounded-full">
+              <Heart className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {dreams.length} dream{dreams.length > 1 ? 's' : ''} added
+              </span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Add New Dream Form */}
         <motion.div
@@ -125,7 +192,7 @@ const DreamSetting = () => {
         </motion.div>
 
         {/* Dreams List */}
-        <div className="space-y-4">
+        <div className="space-y-4 mb-8">
           {dreams.map((dream, index) => (
             <motion.div
               key={dream.id}
@@ -174,6 +241,23 @@ const DreamSetting = () => {
           >
             <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>No dreams added yet. Start by adding your first retirement dream!</p>
+          </motion.div>
+        )}
+
+        {/* Continue Button */}
+        {dreams.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4"
+          >
+            <Button 
+              onClick={handleContinue}
+              className="w-full button-financial text-lg py-4"
+            >
+              Continue to Profile Setup
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </motion.div>
         )}
       </div>

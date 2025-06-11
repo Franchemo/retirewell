@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { RetireWellProvider } from "@/contexts/RetireWellContext";
 import { Toaster } from "@/components/ui/toaster";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -35,34 +36,36 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <ErrorBoundary>
-          <Router>
-            <div className="min-h-screen bg-background text-foreground">
-              <Routes>
-                {/* Default route redirects to RetireWell */}
-                <Route path="/" element={<Navigate to="/retirewell" replace />} />
-                
-                {/* RetireWell Routes */}
-                <Route path="/retirewell" element={<RetireWellHome />} />
-                <Route path="/retirewell/dreams" element={<DreamSetting />} />
-                <Route path="/retirewell/onboarding" element={<GoalOnboarding />} />
-                <Route path="/retirewell/scenarios" element={<ScenarioPlanning />} />
-                <Route path="/retirewell/visualization" element={<DreamVisualization />} />
-                <Route path="/retirewell/profile" element={<Profile />} />
-                <Route path="/retirewell/learn" element={<Learn />} />
-                
-                {/* Original AugMend Health Routes */}
-                <Route path="/augmend" element={<Index />} />
-                <Route path="/augmend/health-assistant" element={<HealthAssistant />} />
-                <Route path="/augmend/reflection" element={<ReflectionJournal />} />
-                <Route path="/augmend/wellness" element={<WellnessCenter />} />
-                <Route path="/augmend/achievements" element={<Achievements />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <Toaster />
-            </div>
-          </Router>
-        </ErrorBoundary>
+        <RetireWellProvider>
+          <ErrorBoundary>
+            <Router>
+              <div className="min-h-screen bg-background text-foreground">
+                <Routes>
+                  {/* Default route redirects to RetireWell */}
+                  <Route path="/" element={<Navigate to="/retirewell" replace />} />
+                  
+                  {/* RetireWell Routes */}
+                  <Route path="/retirewell" element={<RetireWellHome />} />
+                  <Route path="/retirewell/dreams" element={<DreamSetting />} />
+                  <Route path="/retirewell/onboarding" element={<GoalOnboarding />} />
+                  <Route path="/retirewell/scenarios" element={<ScenarioPlanning />} />
+                  <Route path="/retirewell/visualization" element={<DreamVisualization />} />
+                  <Route path="/retirewell/profile" element={<Profile />} />
+                  <Route path="/retirewell/learn" element={<Learn />} />
+                  
+                  {/* Original AugMend Health Routes */}
+                  <Route path="/augmend" element={<Index />} />
+                  <Route path="/augmend/health-assistant" element={<HealthAssistant />} />
+                  <Route path="/augmend/reflection" element={<ReflectionJournal />} />
+                  <Route path="/augmend/wellness" element={<WellnessCenter />} />
+                  <Route path="/augmend/achievements" element={<Achievements />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Toaster />
+              </div>
+            </Router>
+          </ErrorBoundary>
+        </RetireWellProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Users, Briefcase, PiggyBank, Target } from "lucide-react";
@@ -8,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useRetireWell } from "@/contexts/RetireWellContext";
 
 interface OnboardingData {
   demographics: {
@@ -38,6 +38,18 @@ const GoalOnboarding = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { updateProgress, getNextStep, canAccessPage } = useRetireWell();
+
+  // Check if user can access this page
+  useEffect(() => {
+    if (!canAccessPage('onboarding')) {
+      toast({
+        title: "Complete your dreams first",
+        description: "Please add at least one retirement dream before setting up your profile.",
+      });
+      navigate('/retirewell/dreams');
+    }
+  }, [canAccessPage, navigate, toast]);
 
   const steps = [
     {
@@ -83,12 +95,20 @@ const GoalOnboarding = () => {
       timestamp: Date.now()
     }));
 
+    // Update progress
+    updateProgress({
+      hasCompletedOnboarding: true,
+      onboardingData: data,
+      currentStep: 'scenarios'
+    });
+
     toast({
       title: "Profile completed!",
       description: "Your financial profile has been saved.",
     });
 
-    navigate("/retirewell/scenarios");
+    const nextStep = getNextStep();
+    navigate(nextStep);
   };
 
   const updateData = (section: string, field: string, value: string) => {
@@ -350,7 +370,7 @@ const GoalOnboarding = () => {
             onClick={handleNext}
             className="w-full button-financial text-lg py-4"
           >
-            {currentStep === steps.length - 1 ? "Complete Setup" : "Continue"}
+            {currentStep === steps.length - 1 ? "Complete Profile" : "Continue"}
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </motion.div>

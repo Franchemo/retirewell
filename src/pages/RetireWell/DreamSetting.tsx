@@ -1,6 +1,5 @@
-
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +31,15 @@ const DreamSetting = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // 使用useCallback来稳定updateProgress函数引用
+  const updateUserProgress = useCallback((dreamsCount: number) => {
+    updateProgress({
+      hasCompletedDreams: dreamsCount > 0,
+      dreamsCount: dreamsCount,
+      currentStep: dreamsCount > 0 ? 'onboarding' : 'dreams'
+    });
+  }, [updateProgress]);
+
   // Load dreams from localStorage on mount
   useEffect(() => {
     const savedDreams = localStorage.getItem('retirewell-dreams');
@@ -39,23 +47,15 @@ const DreamSetting = () => {
       const dreamsList = JSON.parse(savedDreams);
       setDreams(dreamsList);
       // Update progress based on existing dreams
-      updateProgress({
-        hasCompletedDreams: dreamsList.length > 0,
-        dreamsCount: dreamsList.length,
-        currentStep: dreamsList.length > 0 ? 'onboarding' : 'dreams'
-      });
+      updateUserProgress(dreamsList.length);
     }
-  }, [updateProgress]);
+  }, [updateUserProgress]);
 
   // Save dreams to localStorage whenever dreams change
   useEffect(() => {
     localStorage.setItem('retirewell-dreams', JSON.stringify(dreams));
-    updateProgress({
-      hasCompletedDreams: dreams.length > 0,
-      dreamsCount: dreams.length,
-      currentStep: dreams.length > 0 ? 'onboarding' : 'dreams'
-    });
-  }, [dreams, updateProgress]);
+    updateUserProgress(dreams.length);
+  }, [dreams, updateUserProgress]);
 
   const addDream = () => {
     if (newDream.title.trim()) {

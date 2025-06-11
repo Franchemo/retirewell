@@ -32,7 +32,7 @@ export const WelcomeSection = ({ focusItems }: WelcomeSectionProps) => {
       
       <TodaysFocus focusItems={focusItems} />
 
-      {/* RetireWell Preview */}
+      {/* AugMend Health Preview */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -41,16 +41,16 @@ export const WelcomeSection = ({ focusItems }: WelcomeSectionProps) => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-lg">New: RetireWell</h3>
-            <p className="text-sm opacity-90">Plan your retirement with emotional intelligence</p>
+            <h3 className="font-semibold text-lg">AugMend Health</h3>
+            <p className="text-sm opacity-90">Your original wellness companion</p>
           </div>
-          <Link to="/retirewell">
+          <Link to="/augmend">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex items-center space-x-2 bg-white/30 hover:bg-white/40 px-4 py-2 rounded-lg transition-colors"
             >
-              <span className="text-sm font-medium">Explore</span>
+              <span className="text-sm font-medium">Visit</span>
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </Link>

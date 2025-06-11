@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "@/components/ui/toaster";
@@ -39,6 +39,9 @@ function App() {
           <Router>
             <div className="min-h-screen bg-background text-foreground">
               <Routes>
+                {/* Default route redirects to RetireWell */}
+                <Route path="/" element={<Navigate to="/retirewell" replace />} />
+                
                 {/* RetireWell Routes */}
                 <Route path="/retirewell" element={<RetireWellHome />} />
                 <Route path="/retirewell/dreams" element={<DreamSetting />} />
@@ -49,11 +52,11 @@ function App() {
                 <Route path="/retirewell/learn" element={<Learn />} />
                 
                 {/* Original AugMend Health Routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/health-assistant" element={<HealthAssistant />} />
-                <Route path="/reflection" element={<ReflectionJournal />} />
-                <Route path="/wellness" element={<WellnessCenter />} />
-                <Route path="/achievements" element={<Achievements />} />
+                <Route path="/augmend" element={<Index />} />
+                <Route path="/augmend/health-assistant" element={<HealthAssistant />} />
+                <Route path="/augmend/reflection" element={<ReflectionJournal />} />
+                <Route path="/augmend/wellness" element={<WellnessCenter />} />
+                <Route path="/augmend/achievements" element={<Achievements />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <Toaster />

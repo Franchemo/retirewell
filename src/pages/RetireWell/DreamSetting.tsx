@@ -187,7 +187,7 @@ const DreamSetting = () => {
         >
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Heart className="w-8 h-8 text-financial-secure" />
-            <h1 className="text-3xl font-bold text-financial-gradient">
+            <h1 className="text-3xl font-bold text-financial-gradient whitespace-nowrap">
               What Are Your Retirement Dreams?
             </h1>
           </div>
@@ -421,14 +421,14 @@ const DreamSetting = () => {
           </motion.div>
         )}
 
-        {/* Fixed Continue Button - Centered */}
+        {/* Fixed Continue Button - Centered with blur backdrop */}
         {dreams.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="fixed bottom-20 left-0 right-0 px-4"
+            className="fixed bottom-20 left-0 right-0 px-4 backdrop-blur-sm bg-background/80"
           >
-            <div className="max-w-md mx-auto">
+            <div className="max-w-md mx-auto py-4">
               <Button 
                 onClick={handleContinue}
                 className="w-full button-financial text-lg py-4"

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Heart, Target, TrendingUp, BookOpen, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Navigation from "@/components/RetireWell/Navigation";
 
 const RetireWellHome = () => {
   const navItems = [
@@ -14,7 +15,7 @@ const RetireWellHome = () => {
   ];
 
   return (
-    <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5 pb-20">
       <div className="mobile-container py-8">
         {/* Header */}
         <motion.div
@@ -97,19 +98,10 @@ const RetireWellHome = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Link to Original App */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="text-center mt-8 pt-8 border-t border-border/50"
-        >
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            ← Back to AugMend Health
-          </Link>
-        </motion.div>
       </div>
+      
+      {/* Bottom Navigation */}
+      <Navigation />
     </div>
   );
 };

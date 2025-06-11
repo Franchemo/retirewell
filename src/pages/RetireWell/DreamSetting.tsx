@@ -1,237 +1,185 @@
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
-import { 
-  Plane, 
-  ChefHat, 
-  Heart, 
-  Activity, 
-  Users, 
-  Palette, 
-  Lightbulb, 
-  ArrowRight,
-  ArrowLeft,
-  Check
-} from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heart, Plus, Trash2 } from "lucide-react";
+import Navigation from "@/components/RetireWell/Navigation";
 
 interface Dream {
   id: string;
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  estimatedCost: number;
+  timeframe: string;
 }
 
-const dreams: Dream[] = [
-  {
-    id: "travel",
-    title: "Travel",
-    description: "Explore the world and create lasting memories",
-    icon: Plane,
-  },
-  {
-    id: "cooking",
-    title: "Cooking & Learning",
-    description: "Master new skills and cuisines",
-    icon: ChefHat,
-  },
-  {
-    id: "volunteering",
-    title: "Volunteering",
-    description: "Give back to your community",
-    icon: Heart,
-  },
-  {
-    id: "health",
-    title: "Health & Wellness",
-    description: "Maintain an active, healthy lifestyle",
-    icon: Activity,
-  },
-  {
-    id: "family",
-    title: "Family Time",
-    description: "Spend quality time with loved ones",
-    icon: Users,
-  },
-  {
-    id: "hobbies",
-    title: "Hobbies",
-    description: "Pursue your passions and interests",
-    icon: Palette,
-  },
-  {
-    id: "project",
-    title: "Start a Project",
-    description: "Launch that dream business or initiative",
-    icon: Lightbulb,
-  },
-];
-
 const DreamSetting = () => {
-  const [selectedDreams, setSelectedDreams] = useState<string[]>([]);
-  const [personalNote, setPersonalNote] = useState("");
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [dreams, setDreams] = useState<Dream[]>([]);
+  const [newDream, setNewDream] = useState({
+    title: "",
+    description: "",
+    estimatedCost: "",
+    timeframe: "",
+  });
 
-  const toggleDream = (dreamId: string) => {
-    setSelectedDreams(prev => 
-      prev.includes(dreamId) 
-        ? prev.filter(id => id !== dreamId)
-        : [...prev, dreamId]
-    );
+  const addDream = () => {
+    if (newDream.title.trim()) {
+      const dream: Dream = {
+        id: Date.now().toString(),
+        title: newDream.title,
+        description: newDream.description,
+        estimatedCost: parseFloat(newDream.estimatedCost) || 0,
+        timeframe: newDream.timeframe,
+      };
+      setDreams([...dreams, dream]);
+      setNewDream({ title: "", description: "", estimatedCost: "", timeframe: "" });
+    }
   };
 
-  const handleContinue = () => {
-    if (selectedDreams.length === 0) {
-      toast({
-        title: "Select at least one dream",
-        description: "Choose the retirement dreams that resonate with you.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Save to localStorage for demo purposes
-    localStorage.setItem("retirewell-dreams", JSON.stringify({
-      selectedDreams,
-      personalNote,
-      timestamp: Date.now()
-    }));
-
-    toast({
-      title: "Dreams saved!",
-      description: `${selectedDreams.length} dreams selected for your retirement vision.`,
-    });
-
-    navigate("/retirewell/onboarding");
+  const removeDream = (id: string) => {
+    setDreams(dreams.filter(dream => dream.id !== id));
   };
 
   return (
-    <div className="mobile-full bg-gradient-to-br from-background via-primary/5 to-financial-aspirational/10">
-      <div className="mobile-container py-6">
+    <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5 pb-20">
+      <div className="mobile-container py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="text-center mb-8"
         >
-          <div className="flex items-center mb-4">
-            <Link to="/retirewell" className="p-2 rounded-lg hover:bg-white/20 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <h1 className="text-2xl font-bold ml-3">Set Your Dreams</h1>
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Heart className="w-8 h-8 text-financial-secure" />
+            <h1 className="text-3xl font-bold text-financial-gradient">
+              Dream Setting
+            </h1>
           </div>
-          <p className="text-foreground/70 leading-relaxed">
-            What does your ideal retirement look like? Select the dreams that inspire you most.
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Define your retirement dreams and give them shape
           </p>
         </motion.div>
 
-        {/* Dream Cards Grid */}
-        <div className="grid grid-cols-1 gap-4 mb-8">
-          {dreams.map((dream, index) => {
-            const isSelected = selectedDreams.includes(dream.id);
-            return (
-              <motion.div
-                key={dream.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => toggleDream(dream.id)}
-                className={`dream-card cursor-pointer ${isSelected ? 'selected' : ''}`}
-              >
-                <div className="flex items-center space-x-4">
-                  <div className={`p-3 rounded-xl transition-all duration-300 ${
-                    isSelected 
-                      ? 'bg-financial-aspirational/20' 
-                      : 'bg-financial-secure/10'
-                  }`}>
-                    <dream.icon className={`w-6 h-6 ${
-                      isSelected ? 'text-financial-aspirational' : 'text-financial-secure'
-                    }`} />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{dream.title}</h3>
-                    <p className="text-sm text-muted-foreground">{dream.description}</p>
-                  </div>
-                  {isSelected && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="p-2 bg-financial-aspirational rounded-full"
-                    >
-                      <Check className="w-4 h-4 text-white" />
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Personal Note */}
+        {/* Add New Dream Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="financial-card mb-8"
+          transition={{ delay: 0.1 }}
         >
-          <h3 className="font-semibold mb-3">Why are these dreams important to you?</h3>
-          <Textarea
-            placeholder="Share what makes these dreams meaningful to you... (optional)"
-            value={personalNote}
-            onChange={(e) => setPersonalNote(e.target.value)}
-            className="financial-input resize-none"
-            rows={4}
-          />
+          <Card className="financial-card mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Plus className="w-5 h-5 text-financial-secure" />
+                <span>Add New Dream</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="title">Dream Title</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g., Travel to Europe"
+                  value={newDream.title}
+                  onChange={(e) => setNewDream({...newDream, title: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  placeholder="Describe your dream in detail..."
+                  value={newDream.description}
+                  onChange={(e) => setNewDream({...newDream, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="cost">Estimated Cost ($)</Label>
+                  <Input
+                    id="cost"
+                    type="number"
+                    placeholder="10000"
+                    value={newDream.estimatedCost}
+                    onChange={(e) => setNewDream({...newDream, estimatedCost: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="timeframe">Timeframe</Label>
+                  <Input
+                    id="timeframe"
+                    placeholder="5 years"
+                    value={newDream.timeframe}
+                    onChange={(e) => setNewDream({...newDream, timeframe: e.target.value})}
+                  />
+                </div>
+              </div>
+              <Button onClick={addDream} className="button-financial w-full">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Dream
+              </Button>
+            </CardContent>
+          </Card>
         </motion.div>
 
-        {/* Selected Dreams Summary */}
-        {selectedDreams.length > 0 && (
+        {/* Dreams List */}
+        <div className="space-y-4">
+          {dreams.map((dream, index) => (
+            <motion.div
+              key={dream.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.1 }}
+            >
+              <Card className="financial-card">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg text-financial-secure mb-2">
+                        {dream.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-3">{dream.description}</p>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-success-gradient font-medium">
+                          ${dream.estimatedCost.toLocaleString()}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {dream.timeframe}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeDream(dream.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {dreams.length === 0 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="progress-card mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-center py-12 text-muted-foreground"
           >
-            <h3 className="font-semibold mb-3">Selected Dreams ({selectedDreams.length})</h3>
-            <div className="flex flex-wrap gap-2">
-              {selectedDreams.map(dreamId => {
-                const dream = dreams.find(d => d.id === dreamId);
-                return (
-                  <span 
-                    key={dreamId}
-                    className="px-3 py-1 bg-financial-aspirational/10 text-financial-aspirational text-sm rounded-full border border-financial-aspirational/20"
-                  >
-                    {dream?.title}
-                  </span>
-                );
-              })}
-            </div>
+            <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p>No dreams added yet. Start by adding your first retirement dream!</p>
           </motion.div>
         )}
-
-        {/* Continue Button */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4"
-        >
-          <Button 
-            onClick={handleContinue}
-            className="w-full button-financial text-lg py-4"
-            disabled={selectedDreams.length === 0}
-          >
-            Continue to Planning
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </motion.div>
-
-        {/* Safe area for mobile */}
-        <div className="h-24"></div>
       </div>
+      
+      {/* Bottom Navigation */}
+      <Navigation />
     </div>
   );
 };

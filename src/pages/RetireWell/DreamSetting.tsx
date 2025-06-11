@@ -35,6 +35,7 @@ const DreamSetting = () => {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [selectedDreams, setSelectedDreams] = useState<string[]>([]);
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [newDream, setNewDream] = useState({
     title: "",
     description: "",
@@ -42,12 +43,13 @@ const DreamSetting = () => {
     timeframe: "",
   });
 
-  const { userProgress, updateProgress, getNextStep } = useRetireWell();
+  const { updateProgress } = useRetireWell();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // 使用useCallback来稳定updateProgress函数引用
+  // 稳定的更新函数
   const updateUserProgress = useCallback((dreamsCount: number) => {
+    console.log("Updating progress with dreams count:", dreamsCount);
     updateProgress({
       hasCompletedDreams: dreamsCount > 0,
       dreamsCount: dreamsCount,
@@ -55,23 +57,36 @@ const DreamSetting = () => {
     });
   }, [updateProgress]);
 
-  // Load dreams from localStorage on mount
+  // 只在组件挂载时加载一次
   useEffect(() => {
+    console.log("Loading dreams from localStorage...");
     const savedDreams = localStorage.getItem('retirewell-dreams');
     if (savedDreams) {
-      const dreamsList = JSON.parse(savedDreams);
-      setDreams(dreamsList);
-      updateUserProgress(dreamsList.length);
+      try {
+        const dreamsList = JSON.parse(savedDreams);
+        console.log("Loaded dreams:", dreamsList);
+        setDreams(dreamsList);
+        setSelectedDreams(dreamsList.map((d: Dream) => d.title));
+        updateUserProgress(dreamsList.length);
+      } catch (error) {
+        console.error("Error parsing saved dreams:", error);
+      }
     }
-  }, [updateUserProgress]);
+    setIsLoaded(true);
+  }, []); // 只依赖空数组，确保只执行一次
 
-  // Save dreams to localStorage whenever dreams change
+  // 保存dreams到localStorage，但不触发进度更新
   useEffect(() => {
-    localStorage.setItem('retirewell-dreams', JSON.stringify(dreams));
-    updateUserProgress(dreams.length);
-  }, [dreams, updateUserProgress]);
+    if (isLoaded) {
+      console.log("Saving dreams to localStorage:", dreams);
+      localStorage.setItem('retirewell-dreams', JSON.stringify(dreams));
+      updateUserProgress(dreams.length);
+    }
+  }, [dreams, isLoaded, updateUserProgress]);
 
   const addPredefinedDream = (predefinedDream: typeof PREDEFINED_DREAMS[0]) => {
+    console.log("Adding/removing predefined dream:", predefinedDream.title);
+    
     if (selectedDreams.includes(predefinedDream.title)) {
       // Remove if already selected
       setSelectedDreams(prev => prev.filter(title => title !== predefinedDream.title));
@@ -82,7 +97,7 @@ const DreamSetting = () => {
         id: Date.now().toString(),
         title: predefinedDream.title,
         description: predefinedDream.description,
-        estimatedCost: 50000, // Default cost
+        estimatedCost: 50000,
         timeframe: "5-10 years",
         category: predefinedDream.category
       };
@@ -106,7 +121,7 @@ const DreamSetting = () => {
         timeframe: newDream.timeframe,
         category: "Custom"
       };
-      setDreams([...dreams, dream]);
+      setDreams(prev => [...prev, dream]);
       setNewDream({ title: "", description: "", estimatedCost: "", timeframe: "" });
       setShowCustomForm(false);
       
@@ -134,9 +149,20 @@ const DreamSetting = () => {
       return;
     }
     
-    const nextStep = getNextStep();
-    navigate(nextStep);
+    console.log("Navigating to goals page...");
+    navigate('/retirewell/goals');
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5 pb-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-financial-secure border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your dreams...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5 pb-20">

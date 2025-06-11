@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
-import { Calendar } from 'lucide-react';
+import { Calendar, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { TodaysFocus } from "./TodaysFocus";
 import { FocusItem } from "@/services/dashboardService";
 
@@ -30,6 +31,31 @@ export const WelcomeSection = ({ focusItems }: WelcomeSectionProps) => {
       </div>
       
       <TodaysFocus focusItems={focusItems} />
+
+      {/* RetireWell Preview */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-6 p-4 bg-white/20 rounded-xl backdrop-blur-sm"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-lg">New: RetireWell</h3>
+            <p className="text-sm opacity-90">Plan your retirement with emotional intelligence</p>
+          </div>
+          <Link to="/retirewell">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center space-x-2 bg-white/30 hover:bg-white/40 px-4 py-2 rounded-lg transition-colors"
+            >
+              <span className="text-sm font-medium">Explore</span>
+              <ArrowRight className="w-4 h-4" />
+            </motion.button>
+          </Link>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };

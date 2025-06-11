@@ -61,8 +61,18 @@ export default {
         warning: "#F9CF58",
         caution: "#FF9500",
         critical: "#FF3B30",
-        // New brand color (changed from #16A149 to #4B4E8E)
+        // Brand color
         brand: "#4B4E8E",
+        // Financial-specific colors for RetireWell
+        financial: {
+          success: "#2DD36F",
+          growth: "#00A86B", 
+          warning: "#F9CF58",
+          critical: "#FF3B30",
+          aspirational: "#A55FEB",
+          secure: "#4B4E8E",
+          neutral: "#6B7280",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -94,6 +104,14 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.85" },
         },
+        "slide-up": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "number-roll": {
+          from: { transform: "translateY(20px)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -102,22 +120,30 @@ export default {
         "fade-out": "fade-out 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
+        "slide-up": "slide-up 0.4s ease-out",
+        "number-roll": "number-roll 0.6s ease-out",
       },
       fontSize: {
         "metric": "2.5rem",
         "metric-sm": "1.75rem",
+        "metric-display": "3rem",
+        "metric-small": "1.25rem",
       },
       boxShadow: {
         "card-hover": "0 8px 24px -4px rgba(0, 0, 0, 0.08)",
         "card": "0 4px 12px -2px rgba(0, 0, 0, 0.05)",
+        "financial": "0 4px 20px -2px rgba(75, 78, 142, 0.15)",
+        "dream": "0 6px 30px -4px rgba(165, 95, 235, 0.2)",
       },
       transitionDuration: {
         '400': '400ms',
+        '600': '600ms',
       },
       spacing: {
-        '4.5': '1.125rem', // 18px
-        '13': '3.25rem', // Special spacing for the golden ratio
-        '21': '5.25rem', // Special spacing for the golden ratio
+        '4.5': '1.125rem',
+        '13': '3.25rem',
+        '21': '5.25rem',
+        '18': '4.5rem',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],

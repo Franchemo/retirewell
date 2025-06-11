@@ -1,63 +1,68 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { Toaster } from "@/components/ui/toaster";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { detectBrowser } from "@/utils/browser-detection";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import ReflectionJournal from "./pages/ReflectionJournal";
-import HealthAssistant from "./pages/HealthAssistant";
-import WellnessCenter from "./pages/WellnessCenter";
-import Achievements from "./pages/Achievements";
 
-// Initialize query client with error handling
+// RetireWell Pages
+import RetireWellHome from "@/pages/RetireWell/Home";
+import DreamSetting from "@/pages/RetireWell/DreamSetting";
+import GoalOnboarding from "@/pages/RetireWell/GoalOnboarding";
+import ScenarioPlanning from "@/pages/RetireWell/ScenarioPlanning";
+import DreamVisualization from "@/pages/RetireWell/DreamVisualization";
+import Profile from "@/pages/RetireWell/Profile";
+import Learn from "@/pages/RetireWell/Learn";
+
+// Original AugMend Health Pages
+import Index from "@/pages/Index";
+import HealthAssistant from "@/pages/HealthAssistant";
+import ReflectionJournal from "@/pages/ReflectionJournal";
+import WellnessCenter from "@/pages/WellnessCenter";
+import Achievements from "@/pages/Achievements";
+import NotFound from "@/pages/NotFound";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
       retry: 1,
-      refetchOnWindowFocus: false,
-      meta: {
-        onError: (error: unknown) => {
-          console.error("Query Error:", error);
-        }
-      }
-    }
-  }
+    },
+  },
 });
 
-// Log browser information
-const browserInfo = detectBrowser();
-console.log("Browser Information:", browserInfo);
-
-const App = () => {
-  console.log("App Component Initializing");
-
+function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <ErrorBoundary>
+          <Router>
+            <div className="min-h-screen bg-background text-foreground">
               <Routes>
+                {/* RetireWell Routes */}
+                <Route path="/retirewell" element={<RetireWellHome />} />
+                <Route path="/retirewell/dreams" element={<DreamSetting />} />
+                <Route path="/retirewell/onboarding" element={<GoalOnboarding />} />
+                <Route path="/retirewell/scenarios" element={<ScenarioPlanning />} />
+                <Route path="/retirewell/visualization" element={<DreamVisualization />} />
+                <Route path="/retirewell/profile" element={<Profile />} />
+                <Route path="/retirewell/learn" element={<Learn />} />
+                
+                {/* Original AugMend Health Routes */}
                 <Route path="/" element={<Index />} />
-                <Route path="/reflection-journal" element={<ReflectionJournal />} />
                 <Route path="/health-assistant" element={<HealthAssistant />} />
-                <Route path="/wellness-center" element={<WellnessCenter />} />
+                <Route path="/reflection" element={<ReflectionJournal />} />
+                <Route path="/wellness" element={<WellnessCenter />} />
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+              <Toaster />
+            </div>
+          </Router>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
-};
+}
 
 export default App;

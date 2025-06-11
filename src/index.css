@@ -43,6 +43,8 @@
     --spacing-scale: 1;
   }
 
+  /* ... keep existing code (theme variations) the same ... */
+
   /* Dark Theme */
   .theme-dark {
     --background: 240 10% 3.9%;
@@ -167,6 +169,8 @@
     --ring: 150 70% 40%;
   }
 
+  /* ... keep existing code (font size and density variations) the same ... */
+
   /* Font size variations */
   .text-size-small {
     --text-scale: 0.875;
@@ -289,6 +293,48 @@
     border-radius: calc(1rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
   }
+
+  /* Financial-specific cards for RetireWell */
+  .financial-card {
+    @apply bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl border border-financial-secure/20 shadow-financial hover:shadow-xl transition-all duration-400;
+    padding: calc(1.5rem * var(--spacing-scale));
+    border-radius: calc(1.25rem * var(--spacing-scale));
+    transition: padding 0.3s ease, border-radius 0.3s ease, transform 0.3s ease;
+  }
+
+  .financial-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .dream-card {
+    @apply bg-gradient-to-br from-white/85 to-white/60 backdrop-blur-lg border border-financial-aspirational/30 shadow-dream hover:shadow-2xl transition-all duration-400;
+    padding: calc(1.25rem * var(--spacing-scale));
+    border-radius: calc(1.5rem * var(--spacing-scale));
+    transition: padding 0.3s ease, border-radius 0.3s ease, transform 0.3s ease;
+  }
+
+  .dream-card:hover {
+    transform: scale(1.02) translateY(-3px);
+  }
+
+  .dream-card.selected {
+    @apply border-financial-aspirational/60 bg-gradient-to-br from-financial-aspirational/10 to-financial-aspirational/5;
+    box-shadow: 0 8px 40px -6px rgba(165, 95, 235, 0.25);
+  }
+
+  .progress-card {
+    @apply bg-gradient-to-r from-financial-growth/10 via-white/80 to-financial-success/10 backdrop-blur-lg border border-financial-growth/30 shadow-lg;
+    padding: calc(1rem * var(--spacing-scale));
+    border-radius: calc(1rem * var(--spacing-scale));
+    transition: padding 0.3s ease, border-radius 0.3s ease;
+  }
+
+  .scenario-card {
+    @apply bg-white/85 backdrop-blur-md border border-financial-secure/20 shadow-lg hover:shadow-financial transition-all duration-300;
+    padding: calc(1.25rem * var(--spacing-scale));
+    border-radius: calc(1rem * var(--spacing-scale));
+    transition: padding 0.3s ease, border-radius 0.3s ease;
+  }
   
   .nav-item {
     @apply text-sm font-medium transition-colors;
@@ -307,11 +353,29 @@
     border-radius: calc(9999px * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
   }
+
+  .button-financial {
+    @apply bg-gradient-to-r from-financial-secure to-financial-secure/90 text-white font-medium shadow-lg shadow-financial-secure/25 hover:shadow-xl hover:shadow-financial-secure/30 transition-all duration-400;
+    padding: calc(0.875rem * var(--spacing-scale)) calc(2rem * var(--spacing-scale));
+    border-radius: calc(12px * var(--spacing-scale));
+    transition: padding 0.3s ease, border-radius 0.3s ease, transform 0.2s ease;
+  }
+
+  .button-financial:hover {
+    transform: translateY(-1px);
+  }
   
   .input-minimal {
     @apply bg-white/60 border border-white/20 backdrop-blur-lg focus:ring-2 focus:ring-primary/20 transition-all duration-300;
     padding: calc(0.75rem * var(--spacing-scale)) calc(1rem * var(--spacing-scale));
     border-radius: calc(0.75rem * var(--spacing-scale));
+    transition: padding 0.3s ease, border-radius 0.3s ease;
+  }
+
+  .financial-input {
+    @apply bg-white/70 border border-financial-secure/20 backdrop-blur-md focus:ring-2 focus:ring-financial-secure/30 focus:border-financial-secure/40 transition-all duration-300;
+    padding: calc(0.875rem * var(--spacing-scale)) calc(1.25rem * var(--spacing-scale));
+    border-radius: calc(0.875rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
   }
 }
@@ -324,9 +388,22 @@
   .text-gradient {
     @apply bg-gradient-to-br from-foreground to-foreground/80 bg-clip-text text-transparent;
   }
+
+  .text-financial-gradient {
+    @apply bg-gradient-to-br from-financial-secure to-financial-aspirational bg-clip-text text-transparent;
+  }
+
+  .text-success-gradient {
+    @apply bg-gradient-to-br from-financial-growth to-financial-success bg-clip-text text-transparent;
+  }
   
   .glassmorphism {
     @apply backdrop-blur-xl bg-white/10 border border-white/20;
+    transition: background-color 0.3s ease;
+  }
+
+  .financial-glassmorphism {
+    @apply backdrop-blur-xl bg-gradient-to-br from-white/15 to-financial-secure/5 border border-financial-secure/20;
     transition: background-color 0.3s ease;
   }
   
@@ -338,5 +415,27 @@
   
   .theme-color-dot {
     @apply w-4 h-4 rounded-full;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-container {
+    @apply max-w-md mx-auto px-4;
+  }
+
+  .mobile-full {
+    @apply w-full min-h-screen;
+  }
+
+  .mobile-safe-area {
+    @apply pb-safe-area;
+  }
+
+  /* Financial animation utilities */
+  .animate-financial-reveal {
+    @apply animate-slide-up;
+  }
+
+  .animate-number {
+    @apply animate-number-roll;
   }
 }

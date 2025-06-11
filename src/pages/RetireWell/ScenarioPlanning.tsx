@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import Navigation from "@/components/RetireWell/Navigation";
 
 const ScenarioPlanning = () => {
   const [retirementAge, setRetirementAge] = useState([65]);
@@ -61,7 +62,7 @@ const ScenarioPlanning = () => {
   const feasibilityScore = Math.min(100, (finalSavings / (incomeGoal[0] * 25)) * 100);
 
   return (
-    <div className="mobile-full bg-gradient-to-br from-background via-primary/5 to-financial-growth/10">
+    <div className="mobile-full bg-gradient-to-br from-background via-primary/5 to-financial-growth/10 pb-20">
       <div className="mobile-container py-6">
         {/* Header */}
         <motion.div
@@ -70,7 +71,7 @@ const ScenarioPlanning = () => {
           className="mb-8"
         >
           <div className="flex items-center mb-4">
-            <Link to="/retirewell/onboarding" className="p-2 rounded-lg hover:bg-white/20 transition-colors">
+            <Link to="/retirewell/goals" className="p-2 rounded-lg hover:bg-white/20 transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-2xl font-bold ml-3">Scenario Planning</h1>
@@ -254,9 +255,9 @@ const ScenarioPlanning = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4"
+          className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4"
         >
-          <Link to="/retirewell/visualization">
+          <Link to="/retirewell/dreams/visualization">
             <Button className="w-full button-financial text-lg py-4">
               Visualize Your Dreams
               <ArrowLeft className="w-5 h-5 ml-2 rotate-180" />
@@ -264,6 +265,9 @@ const ScenarioPlanning = () => {
           </Link>
         </motion.div>
       </div>
+      
+      {/* Bottom Navigation */}
+      <Navigation />
     </div>
   );
 };

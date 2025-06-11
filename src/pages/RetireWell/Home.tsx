@@ -14,19 +14,19 @@ const RetireWellHome = () => {
       return {
         title: "Welcome to Your Future",
         subtitle: "Transform your retirement dreams into actionable plans with our emotionally intelligent financial tools.",
-        cta: "Start Your Journey",
+        cta: "Start Setting Dreams",
         nextStep: "/retirewell/dreams"
       };
     } else if (!userProgress.hasCompletedOnboarding) {
       return {
         title: "Great Start!",
-        subtitle: `You've added ${userProgress.dreamsCount} retirement dream${userProgress.dreamsCount > 1 ? 's' : ''}. Now let's set up your financial profile.`,
-        cta: "Complete Your Profile",
+        subtitle: `You've selected ${userProgress.dreamsCount} retirement dream${userProgress.dreamsCount > 1 ? 's' : ''}. Now let's set up your financial goals.`,
+        cta: "Complete Your Goals",
         nextStep: getNextStep()
       };
     } else if (!userProgress.hasCompletedScenarios) {
       return {
-        title: "Profile Complete!",
+        title: "Goals Complete!",
         subtitle: "Now let's create scenarios to see how you can achieve your dreams.",
         cta: "Plan Your Scenarios",
         nextStep: getNextStep()
@@ -50,10 +50,10 @@ const RetireWellHome = () => {
       completed: userProgress.hasCompletedDreams
     },
     { 
-      title: "Profile", 
-      href: "/retirewell/onboarding", 
+      title: "Goals", 
+      href: "/retirewell/goals", 
       icon: User, 
-      description: "Your financial profile",
+      description: "Your financial profile & goals",
       completed: userProgress.hasCompletedOnboarding
     },
     { 
@@ -65,7 +65,7 @@ const RetireWellHome = () => {
     },
     { 
       title: "Visualization", 
-      href: "/retirewell/visualization", 
+      href: "/retirewell/dreams/visualization", 
       icon: Target, 
       description: "See your dreams come to life",
       completed: false

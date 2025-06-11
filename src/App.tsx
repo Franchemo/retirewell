@@ -9,9 +9,9 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 // RetireWell Pages
 import RetireWellHome from "@/pages/RetireWell/Home";
 import DreamSetting from "@/pages/RetireWell/DreamSetting";
+import DreamVisualization from "@/pages/RetireWell/DreamVisualization";
 import GoalOnboarding from "@/pages/RetireWell/GoalOnboarding";
 import ScenarioPlanning from "@/pages/RetireWell/ScenarioPlanning";
-import DreamVisualization from "@/pages/RetireWell/DreamVisualization";
 import Profile from "@/pages/RetireWell/Profile";
 import Learn from "@/pages/RetireWell/Learn";
 
@@ -44,14 +44,19 @@ function App() {
                   {/* Default route redirects to RetireWell */}
                   <Route path="/" element={<Navigate to="/retirewell" replace />} />
                   
-                  {/* RetireWell Routes */}
+                  {/* RetireWell Routes - Updated structure */}
                   <Route path="/retirewell" element={<RetireWellHome />} />
+                  <Route path="/retirewell/home" element={<RetireWellHome />} />
                   <Route path="/retirewell/dreams" element={<DreamSetting />} />
-                  <Route path="/retirewell/onboarding" element={<GoalOnboarding />} />
+                  <Route path="/retirewell/dreams/visualization" element={<DreamVisualization />} />
+                  <Route path="/retirewell/goals" element={<GoalOnboarding />} />
                   <Route path="/retirewell/scenarios" element={<ScenarioPlanning />} />
-                  <Route path="/retirewell/visualization" element={<DreamVisualization />} />
-                  <Route path="/retirewell/profile" element={<Profile />} />
                   <Route path="/retirewell/learn" element={<Learn />} />
+                  <Route path="/retirewell/profile" element={<Profile />} />
+                  
+                  {/* Legacy routes for backward compatibility */}
+                  <Route path="/retirewell/onboarding" element={<Navigate to="/retirewell/goals" replace />} />
+                  <Route path="/retirewell/visualization" element={<Navigate to="/retirewell/dreams/visualization" replace />} />
                   
                   {/* Original AugMend Health Routes */}
                   <Route path="/augmend" element={<Index />} />

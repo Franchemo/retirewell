@@ -5,7 +5,7 @@ export interface UserProgress {
   hasCompletedDreams: boolean;
   hasCompletedOnboarding: boolean;
   hasCompletedScenarios: boolean;
-  currentStep: 'dreams' | 'onboarding' | 'scenarios' | 'visualization' | 'completed';
+  currentStep: 'dreams' | 'goals' | 'scenarios' | 'visualization' | 'completed';
   dreamsCount: number;
   onboardingData: any;
 }
@@ -61,6 +61,7 @@ export const RetireWellProvider = ({ children }: { children: ReactNode }) => {
     setUserProgress(defaultProgress);
     localStorage.removeItem('retirewell-progress');
     localStorage.removeItem('retirewell-onboarding');
+    localStorage.removeItem('retirewell-dreams');
   };
 
   const getNextStep = (): string => {
@@ -68,19 +69,20 @@ export const RetireWellProvider = ({ children }: { children: ReactNode }) => {
       return '/retirewell/dreams';
     }
     if (!userProgress.hasCompletedOnboarding) {
-      return '/retirewell/onboarding';
+      return '/retirewell/goals';
     }
     if (!userProgress.hasCompletedScenarios) {
       return '/retirewell/scenarios';
     }
-    return '/retirewell/visualization';
+    return '/retirewell/dreams/visualization';
   };
 
   const canAccessPage = (page: string): boolean => {
     switch (page) {
+      case 'home':
       case 'dreams':
         return true; // Always accessible
-      case 'onboarding':
+      case 'goals':
         return userProgress.hasCompletedDreams;
       case 'scenarios':
         return userProgress.hasCompletedDreams && userProgress.hasCompletedOnboarding;

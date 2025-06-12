@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Users, Briefcase, PiggyBank, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,7 @@ const GoalOnboarding = () => {
 
   // Check if user can access this page
   useEffect(() => {
-    if (!canAccessPage('goals')) {
+    if (!canAccessPage('onboarding')) {
       toast({
         title: "Complete your dreams first",
         description: "Please add at least one retirement dream before setting up your profile.",
@@ -122,7 +121,10 @@ const GoalOnboarding = () => {
     }));
   };
 
-  const setPriorities = (newPriorities: string[]) => {
+  const movePriority = (fromIndex: number, toIndex: number) => {
+    const newPriorities = [...data.priorities];
+    const [movedItem] = newPriorities.splice(fromIndex, 1);
+    newPriorities.splice(toIndex, 0, movedItem);
     setData(prev => ({ ...prev, priorities: newPriorities }));
   };
 
@@ -276,31 +278,27 @@ const GoalOnboarding = () => {
             <p className="text-foreground/70 mb-6">
               Drag to reorder your financial priorities from most to least important:
             </p>
-            <Reorder.Group axis="y" values={data.priorities} onReorder={setPriorities} className="space-y-3">
-              {data.priorities.map((priority, index) => (
-                <Reorder.Item 
-                  key={priority} 
-                  value={priority}
-                  className="financial-card cursor-move touch-manipulation"
-                  whileDrag={{ scale: 1.02, zIndex: 10 }}
-                  drag="y"
-                  dragConstraints={{ top: 0, bottom: 0 }}
-                  dragElastic={0.1}
-                >
-                  <div className="flex items-center space-x-4 p-4">
-                    <div className="w-8 h-8 rounded-full bg-financial-secure/20 flex items-center justify-center text-sm font-semibold text-financial-secure">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium">{priorityLabels[priority as keyof typeof priorityLabels]}</h3>
-                    </div>
-                    <div className="text-muted-foreground text-lg">
-                      ⋮⋮
-                    </div>
+            {data.priorities.map((priority, index) => (
+              <motion.div
+                key={priority}
+                layout
+                className="financial-card cursor-move"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-8 h-8 rounded-full bg-financial-secure/20 flex items-center justify-center text-sm font-semibold text-financial-secure">
+                    {index + 1}
                   </div>
-                </Reorder.Item>
-              ))}
-            </Reorder.Group>
+                  <div className="flex-1">
+                    <h3 className="font-medium">{priorityLabels[priority as keyof typeof priorityLabels]}</h3>
+                  </div>
+                  <div className="text-muted-foreground">
+                    ⋮⋮
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         );
 
@@ -362,21 +360,19 @@ const GoalOnboarding = () => {
           </AnimatePresence>
         </div>
 
-        {/* Navigation with blur backdrop */}
+        {/* Navigation */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4 backdrop-blur-sm bg-background/80"
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4"
         >
-          <div className="py-4">
-            <Button 
-              onClick={handleNext}
-              className="w-full button-financial text-lg py-4"
-            >
-              {currentStep === steps.length - 1 ? "Complete Profile" : "Continue"}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
+          <Button 
+            onClick={handleNext}
+            className="w-full button-financial text-lg py-4"
+          >
+            {currentStep === steps.length - 1 ? "Complete Profile" : "Continue"}
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
         </motion.div>
 
         {/* Safe area */}

@@ -187,7 +187,7 @@ const DreamSetting = () => {
         >
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Heart className="w-8 h-8 text-financial-secure" />
-            <h1 className="text-3xl font-bold text-financial-gradient">
+            <h1 className="text-3xl font-bold text-financial-gradient whitespace-nowrap">
               What Are Your Retirement Dreams?
             </h1>
           </div>

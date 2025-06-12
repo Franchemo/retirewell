@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Plus, Trash2, ArrowRight, Sparkles } from "lucide-react";
 import Navigation from "@/components/RetireWell/Navigation";
+import MobileDreamCard from "@/components/RetireWell/MobileDreamCard";
 import { useRetireWell } from "@/contexts/RetireWellContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -167,7 +168,7 @@ const DreamSetting = () => {
 
   if (!isLoaded) {
     return (
-      <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5 pb-20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-20 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-financial-secure border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading your dreams...</p>
@@ -177,90 +178,58 @@ const DreamSetting = () => {
   }
 
   return (
-    <div className="mobile-full bg-gradient-to-br from-background via-background to-primary/5 pb-20">
-      <div className="mobile-container py-8">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-24">
+      <div className="max-w-md mx-auto px-4 py-6">
+        {/* Header - Optimized for mobile */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-6"
         >
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Heart className="w-8 h-8 text-financial-secure" />
-            <h1 className="text-3xl font-bold text-financial-gradient whitespace-nowrap">
+          <div className="flex items-center justify-center space-x-2 mb-3">
+            <Heart className="w-6 h-6 text-financial-secure" />
+            <h1 className="text-2xl font-bold text-financial-gradient">
               What Are Your Retirement Dreams?
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto">
-            Before we talk numbers, let's explore what truly matters to you. Select the dreams that resonate with your vision of retirement and tell us why they're important.
+          <p className="text-base text-muted-foreground leading-relaxed px-2">
+            Before we talk numbers, let's explore what truly matters to you. Select the dreams that resonate with your vision of retirement.
           </p>
         </motion.div>
 
-        {/* Progress indicator */}
+        {/* Progress indicator - More prominent */}
         {dreams.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 text-center"
           >
-            <div className="inline-flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-2 rounded-full">
+            <div className="inline-flex items-center space-x-2 bg-financial-secure/10 text-financial-secure px-4 py-2 rounded-full border border-financial-secure/20">
               <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">
+              <span className="text-sm font-semibold">
                 {dreams.length} dream{dreams.length > 1 ? 's' : ''} selected
               </span>
             </div>
           </motion.div>
         )}
 
-        {/* Predefined Dreams Grid */}
+        {/* Dreams Grid - Using new mobile-optimized cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
+          className="mb-6"
         >
-          <div className="grid grid-cols-1 gap-3">
-            {PREDEFINED_DREAMS.map((dream, index) => {
-              const isSelected = selectedDreams.includes(dream.title);
-              return (
-                <motion.div
-                  key={dream.title}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.05 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Card 
-                    className={`cursor-pointer transition-all duration-300 hover:shadow-md ${
-                      isSelected 
-                        ? "border-financial-secure bg-financial-secure/5 shadow-lg" 
-                        : "border-border hover:border-financial-secure/50"
-                    }`}
-                    onClick={() => addPredefinedDream(dream)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-4">
-                        <div className="text-2xl">{dream.icon}</div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{dream.title}</h3>
-                          <p className="text-sm text-muted-foreground">{dream.description}</p>
-                          <span className="text-xs text-financial-secure font-medium">{dream.category}</span>
-                        </div>
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-6 h-6 bg-financial-secure rounded-full flex items-center justify-center"
-                          >
-                            <Heart className="w-4 h-4 text-white fill-white" />
-                          </motion.div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+          <div className="space-y-3">
+            {PREDEFINED_DREAMS.map((dream, index) => (
+              <MobileDreamCard
+                key={dream.title}
+                dream={dream}
+                isSelected={selectedDreams.includes(dream.title)}
+                onClick={() => addPredefinedDream(dream)}
+                index={index}
+              />
+            ))}
           </div>
         </motion.div>
 
@@ -275,7 +244,7 @@ const DreamSetting = () => {
             <Button
               variant="outline"
               onClick={() => setShowCustomForm(true)}
-              className="w-full border-dashed border-2 py-8 text-muted-foreground hover:text-financial-secure hover:border-financial-secure"
+              className="w-full border-dashed border-2 py-6 text-muted-foreground hover:text-financial-secure hover:border-financial-secure transition-colors"
             >
               <Plus className="w-5 h-5 mr-2" />
               Add Custom Dream
@@ -291,54 +260,58 @@ const DreamSetting = () => {
             exit={{ opacity: 0, height: 0 }}
             className="mb-6"
           >
-            <Card className="financial-card">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+            <Card className="border-2 border-financial-secure/20 bg-financial-secure/5">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center space-x-2 text-lg">
                   <Plus className="w-5 h-5 text-financial-secure" />
                   <span>Add Custom Dream</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Dream Title</Label>
+                  <Label htmlFor="title" className="text-sm font-medium">Dream Title</Label>
                   <Input
                     id="title"
                     placeholder="e.g., Learn to Paint"
                     value={newDream.title}
                     onChange={(e) => setNewDream({...newDream, title: e.target.value})}
+                    className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-sm font-medium">Description</Label>
                   <Input
                     id="description"
                     placeholder="Describe your dream in detail..."
                     value={newDream.description}
                     onChange={(e) => setNewDream({...newDream, description: e.target.value})}
+                    className="mt-1"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label htmlFor="cost">Estimated Cost ($)</Label>
+                    <Label htmlFor="cost" className="text-sm font-medium">Estimated Cost ($)</Label>
                     <Input
                       id="cost"
                       type="number"
                       placeholder="10000"
                       value={newDream.estimatedCost}
                       onChange={(e) => setNewDream({...newDream, estimatedCost: e.target.value})}
+                      className="mt-1"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="timeframe">Timeframe</Label>
+                    <Label htmlFor="timeframe" className="text-sm font-medium">Timeframe</Label>
                     <Input
                       id="timeframe"
                       placeholder="5 years"
                       value={newDream.timeframe}
                       onChange={(e) => setNewDream({...newDream, timeframe: e.target.value})}
+                      className="mt-1"
                     />
                   </div>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 pt-2">
                   <Button onClick={addCustomDream} className="button-financial flex-1">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Dream
@@ -356,16 +329,16 @@ const DreamSetting = () => {
           </motion.div>
         )}
 
-        {/* Tell Us Why These Dreams Matter Section */}
+        {/* Personal Reasons Section - Improved mobile layout */}
         {dreams.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-32"
+            className="mb-24"
           >
             <div className="text-center mb-6">
-              <h2 className="text-xl font-semibold text-financial-secure bg-white/80 px-4 py-2 rounded-lg inline-block">
-                Tell Us Why These Dreams Matter to You
+              <h2 className="text-xl font-semibold text-financial-secure bg-white/90 px-4 py-3 rounded-xl inline-block shadow-sm border border-financial-secure/20">
+                Tell Us Why These Dreams Matter
               </h2>
             </div>
             
@@ -377,29 +350,29 @@ const DreamSetting = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="financial-card">
-                    <CardContent className="pt-4">
+                  <Card className="border border-financial-secure/20 bg-white shadow-sm">
+                    <CardContent className="p-4">
                       <div className="flex items-center space-x-3 mb-3">
-                        <div className="text-xl">
+                        <div className="text-xl flex-shrink-0">
                           {PREDEFINED_DREAMS.find(pd => pd.title === dream.title)?.icon || "🎯"}
                         </div>
-                        <h4 className="font-semibold text-financial-secure">
+                        <h4 className="font-semibold text-financial-secure flex-1 text-base">
                           {dream.title}
                         </h4>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => removeDream(dream.id)}
-                          className="text-destructive hover:text-destructive ml-auto"
+                          className="text-destructive hover:text-destructive flex-shrink-0 h-8 w-8 p-0"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                       <Textarea
-                        placeholder={`What makes "${dream.title}" meaningful to you? Share your personal motivation...`}
+                        placeholder={`What makes "${dream.title}" meaningful to you?`}
                         value={dream.personalReason || ""}
                         onChange={(e) => updateDreamReason(dream.id, e.target.value)}
-                        className="min-h-[80px] resize-none"
+                        className="min-h-[80px] resize-none text-sm"
                       />
                     </CardContent>
                   </Card>
@@ -414,32 +387,32 @@ const DreamSetting = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9 }}
-            className="text-center py-12 text-muted-foreground mb-24"
+            className="text-center py-12 text-muted-foreground mb-20"
           >
-            <Heart className="w-16 h-16 mx-auto mb-4 opacity-50" />
+            <Heart className="w-16 h-16 mx-auto mb-4 opacity-30" />
             <p className="text-lg">Select your retirement dreams above to get started!</p>
           </motion.div>
         )}
-
-        {/* Fixed Continue Button - Centered */}
-        {dreams.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="fixed bottom-20 left-0 right-0 px-4"
-          >
-            <div className="max-w-md mx-auto">
-              <Button 
-                onClick={handleContinue}
-                className="w-full button-financial text-lg py-4"
-              >
-                Continue to Goals Setup
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-          </motion.div>
-        )}
       </div>
+
+      {/* Fixed Continue Button - Better mobile positioning */}
+      {dreams.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed bottom-20 left-0 right-0 px-4 z-40"
+        >
+          <div className="max-w-md mx-auto">
+            <Button 
+              onClick={handleContinue}
+              className="w-full button-financial text-base py-4 shadow-lg"
+            >
+              Continue to Goals Setup
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </motion.div>
+      )}
       
       {/* Bottom Navigation */}
       <Navigation />

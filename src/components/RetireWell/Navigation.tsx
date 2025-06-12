@@ -1,8 +1,7 @@
 
-
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Heart, TrendingUp, BookOpen, User, Lock, Eye } from "lucide-react";
+import { Home, Heart, TrendingUp, BookOpen, User, Lock } from "lucide-react";
 import { useRetireWell } from "@/contexts/RetireWellContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,18 +27,18 @@ const Navigation = () => {
       progress: userProgress.hasCompletedDreams 
     },
     { 
-      title: "Visualize", 
-      href: "/retirewell/dreams/visualization", 
-      icon: Eye, 
-      page: "visualization",
-      progress: false 
-    },
-    { 
       title: "Scenarios", 
       href: "/retirewell/scenarios", 
       icon: TrendingUp, 
       page: "scenarios",
       progress: userProgress.hasCompletedScenarios 
+    },
+    { 
+      title: "Learn", 
+      href: "/retirewell/learn", 
+      icon: BookOpen, 
+      page: "learn",
+      progress: false 
     },
     { 
       title: "Profile", 
@@ -69,8 +68,6 @@ const Navigation = () => {
         return 'dreams and goals setup';
       case 'profile':
         return 'basic setup';
-      case 'visualization':
-        return 'dreams setup';
       default:
         return 'previous steps';
     }
@@ -166,4 +163,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-

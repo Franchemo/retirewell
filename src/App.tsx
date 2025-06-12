@@ -1,10 +1,10 @@
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { RetireWellProvider } from "@/contexts/RetireWellContext";
 import { Toaster } from "@/components/ui/toaster";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import MobileAppMockup from "@/components/MobileAppMockup";
 
 // RetireWell Pages
 import RetireWellHome from "@/pages/RetireWell/Home";
@@ -33,14 +33,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  // Check if the URL has a mockup parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const showMockup = urlParams.get('mockup') === 'true';
-
-  if (showMockup) {
-    return <MobileAppMockup />;
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>

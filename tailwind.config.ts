@@ -63,13 +63,13 @@ export default {
         critical: "#FF3B30",
         // Brand color
         brand: "#4B4E8E",
-        // Financial-specific colors for RetireWell - Updated with softer purple gradient
+        // Financial-specific colors for RetireWell
         financial: {
-          success: "#F7F5FD", // soft purple background
-          growth: "#E6E6F0", // lighter muted border color  
+          success: "#2DD36F",
+          growth: "#00A86B", 
           warning: "#F9CF58",
           critical: "#FF3B30",
-          aspirational: "#6C63FF", // muted purple for metrics
+          aspirational: "#A55FEB",
           secure: "#4B4E8E",
           neutral: "#6B7280",
         },
@@ -133,7 +133,7 @@ export default {
         "card-hover": "0 8px 24px -4px rgba(0, 0, 0, 0.08)",
         "card": "0 4px 12px -2px rgba(0, 0, 0, 0.05)",
         "financial": "0 4px 20px -2px rgba(75, 78, 142, 0.15)",
-        "dream": "0 6px 30px -4px rgba(108, 99, 255, 0.2)",
+        "dream": "0 6px 30px -4px rgba(165, 95, 235, 0.2)",
       },
       transitionDuration: {
         '400': '400ms',

@@ -54,21 +54,21 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         // Health status colors
-        optimal: "#2DD36F",
-        optimal2: "#00A86B",
+        optimal: "#64748b",
+        optimal2: "#475569",
         attention: "#A55FEB",
         attention2: "#8861DD",
-        warning: "#F9CF58",
-        caution: "#FF9500",
-        critical: "#FF3B30",
+        warning: "#eab308",
+        caution: "#f59e0b",
+        critical: "#ef4444",
         // Brand color
         brand: "#4B4E8E",
-        // Financial-specific colors for RetireWell
+        // Financial-specific colors for RetireWell - softer palette
         financial: {
-          success: "#2DD36F",
-          growth: "#00A86B", 
-          warning: "#F9CF58",
-          critical: "#FF3B30",
+          success: "#64748b",
+          growth: "#475569", 
+          warning: "#eab308",
+          critical: "#ef4444",
           aspirational: "#A55FEB",
           secure: "#4B4E8E",
           neutral: "#6B7280",

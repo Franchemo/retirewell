@@ -43,8 +43,6 @@
     --spacing-scale: 1;
   }
 
-  /* ... keep existing code (theme variations) the same ... */
-
   /* Dark Theme */
   .theme-dark {
     --background: 240 10% 3.9%;
@@ -168,8 +166,6 @@
     --input: 150 30% 90%;
     --ring: 150 70% 40%;
   }
-
-  /* ... keep existing code (font size and density variations) the same ... */
 
   /* Font size variations */
   .text-size-small {
@@ -323,7 +319,7 @@
   }
 
   .progress-card {
-    @apply bg-gradient-to-r from-financial-growth/10 via-white/80 to-financial-success/10 backdrop-blur-lg border border-financial-growth/30 shadow-lg;
+    @apply bg-gradient-to-r from-slate-50/80 via-white/80 to-slate-50/90 backdrop-blur-lg border border-slate-200/50 shadow-lg;
     padding: calc(1rem * var(--spacing-scale));
     border-radius: calc(1rem * var(--spacing-scale));
     transition: padding 0.3s ease, border-radius 0.3s ease;
@@ -390,11 +386,11 @@
   }
 
   .text-financial-gradient {
-    @apply bg-gradient-to-br from-financial-secure to-financial-aspirational bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-financial-secure to-slate-600 bg-clip-text text-transparent;
   }
 
   .text-success-gradient {
-    @apply bg-gradient-to-br from-financial-growth to-financial-success bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-slate-600 to-slate-500 bg-clip-text text-transparent;
   }
   
   .glassmorphism {
